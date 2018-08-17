@@ -1,6 +1,6 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
-namespace Digraph\Destructr\LegacyDrivers;
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+namespace Destructr\LegacyDrivers;
 
 /**
  * What this driver supports: MySQL 5.6, as long as you have permissions to

@@ -1,10 +1,10 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 declare(strict_types=1);
-namespace Digraph\Destructr\LegacyDrivers;
+namespace Destructr\LegacyDrivers;
 
 use PHPUnit\Framework\TestCase;
-use Digraph\Destructr\Drivers\AbstractDriverTest;
+use Destructr\Drivers\AbstractDriverTest;
 
 class SQLiteDriverTest extends AbstractDriverTest
 {

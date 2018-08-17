@@ -1,0 +1,23 @@
+Date: 2018-08-10T03:16:29+01:00
+Machine: PAULZE
+Ops per: 1000
+Each result is the average number of milliseconds it took to complete each operation. Lower is better.
+
+Digraph\Destructr\Drivers\MySQLDriver
+insert: 30.19ms
+update: 31.07ms
+search vcol: 147.44ms
+search json: 154.34ms
+
+Digraph\Destructr\LegacyDrivers\MySQL56Driver
+insert: 32.89ms
+update: 25.11ms
+search vcol: 174.05ms
+search json: 192.56ms
+
+Digraph\Destructr\LegacyDrivers\SQLiteDriver
+insert: 140.28ms
+update: 145.12ms
+search vcol: 157.92ms
+search json: 165.01ms
+

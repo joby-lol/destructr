@@ -1,5 +1,5 @@
 {
-    "name": "digraphcms/destructr",
+    "name": "byjoby/destructr",
     "description": "A library for storing a mix of structured and unstructured data in relational databases",
     "type": "library",
     "license": "MIT",

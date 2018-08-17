@@ -1,9 +1,6 @@
 <?php
-/*  Digraph CMS: Destructr
-    https://github.com/digraphcms/destructr
-    MIT License
-    Copyright (c) 2018 Joby Elliott <joby@byjoby.com> */
-namespace Digraph\Destructr;
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+namespace Destructr;
 
 interface DSOFactoryInterface
 {

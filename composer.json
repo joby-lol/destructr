@@ -30,12 +30,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Digraph\\Destructr\\": "src/"
+            "Destructr\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Digraph\\Destructr\\": "tests/"
+            "Destructr\\": "tests/"
         }
     }
 }

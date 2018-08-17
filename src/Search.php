@@ -1,9 +1,9 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
-namespace Digraph\Destructr;
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+namespace Destructr;
 
-use Digraph\Destructr\DSOFactoryInterface;
-use Digraph\Destructr\Drivers\DSODriverInterface;
+use Destructr\DSOFactoryInterface;
+use Destructr\Drivers\DSODriverInterface;
 
 class Search implements \Serializable
 {

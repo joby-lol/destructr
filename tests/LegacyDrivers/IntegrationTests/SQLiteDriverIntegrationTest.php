@@ -1,11 +1,11 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 declare(strict_types=1);
-namespace Digraph\Destructr\LegacyDrivers\IntegrationTests;
+namespace Destructr\LegacyDrivers\IntegrationTests;
 
 use PHPUnit\Framework\TestCase;
-use Digraph\Destructr\Drivers\IntegrationTests\AbstractDriverIntegrationTest;
-use Digraph\Destructr\LegacyDrivers\SQLiteDriver;
+use Destructr\Drivers\IntegrationTests\AbstractDriverIntegrationTest;
+use Destructr\LegacyDrivers\SQLiteDriver;
 
 class MySQLDriverTest extends AbstractDriverIntegrationTest
 {

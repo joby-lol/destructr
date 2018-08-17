@@ -1,9 +1,9 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
-namespace Digraph\Destructr\Drivers;
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+namespace Destructr\Drivers;
 
-use Digraph\Destructr\DSOInterface;
-use Digraph\Destructr\Search;
+use Destructr\DSOInterface;
+use Destructr\Search;
 
 //TODO: Caching? It should happen somewhere in this class I think.
 abstract class AbstractDriver implements DSODriverInterface

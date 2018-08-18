@@ -8,8 +8,8 @@ use PHPUnit\Framework\TestCase;
 class MySQLDriverTest extends AbstractDriverTest
 {
     const DRIVER_CLASS = MySQLDriver::class;
-    const DRIVER_DSN = 'mysql:host=127.0.0.1;dbname=phpunit';
-    const DRIVER_USERNAME = 'travis';
+    const DRIVER_DSN = 'mysql:host=mysql;dbname=ci';
+    const DRIVER_USERNAME = 'ci_password';
     const DRIVER_PASSWORD = null;
     const DRIVER_OPTIONS = null;
 }

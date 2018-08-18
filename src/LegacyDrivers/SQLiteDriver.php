@@ -3,7 +3,6 @@
 namespace Destructr\LegacyDrivers;
 
 use Destructr\DSOInterface;
-use Digraph\FlatArray\FlatArray;
 use Destructr\Factory;
 
 /**

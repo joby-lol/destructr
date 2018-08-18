@@ -6,7 +6,7 @@ use Destructr\Drivers\AbstractDriver;
 use Destructr\DSOInterface;
 use Destructr\Factory;
 use Destructr\Search;
-use Digraph\FlatArray\FlatArray;
+use Flatrr\FlatArray;
 
 /**
  * This driver is for supporting older SQL servers that don't have their own

@@ -2,7 +2,7 @@
 /* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 namespace Destructr;
 
-use \Digraph\FlatArray\FlatArray;
+use \Flatrr\FlatArray;
 
 /**
  * Interface for DeStructure Objects (DSOs). These are the class that is

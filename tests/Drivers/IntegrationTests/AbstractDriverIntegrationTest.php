@@ -1,13 +1,13 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 declare(strict_types=1);
-namespace Digraph\Destructr\Drivers\IntegrationTests;
+namespace Destructr\Drivers\IntegrationTests;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\DbUnit\TestCaseTrait;
-use Digraph\Destructr\DSO;
-use Digraph\Destructr\Search;
-use Digraph\Destructr\Factory;
+use Destructr\DSO;
+use Destructr\Search;
+use Destructr\Factory;
 
 abstract class AbstractDriverIntegrationTest extends TestCase
 {

@@ -20,7 +20,7 @@ The things many of this sort of driver will *not* ever support:
 
 ### SQLite 3
 
-**\Digraph\Destructr\LegacyDrivers\SQLiteDriver**
+**\Destructr\LegacyDrivers\SQLiteDriver**
 
 **Overall support level: Highly functional, a touch slow**
 
@@ -41,7 +41,7 @@ using SQLite if you don't have access to a fully supported database version.
 
 ### MySQL 5.6
 
-**\Digraph\Destructr\LegacyDrivers\MySQL56Driver**
+**\Destructr\LegacyDrivers\MySQL56Driver**
 
 **Overall support level: Decent performance, highly suspect accuracy**
 

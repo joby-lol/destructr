@@ -1,15 +1,17 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
-namespace Digraph\Destructr;
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+namespace Destructr;
 
-use Digraph\Destructr\DSOFactoryInterface;
-use Digraph\Destructr\Drivers\DSODriverInterface;
+use Destructr\DSOFactoryInterface;
+use Destructr\Drivers\DSODriverInterface;
 
 class Search implements \Serializable
 {
-    use \Digraph\Utilities\ValueFunctionTrait;
-
     protected $factory;
+    protected $where;
+    protected $order;
+    protected $limit;
+    protected $offset;
 
     public function __construct(DSOFactoryInterface &$factory=null)
     {
@@ -23,22 +25,34 @@ class Search implements \Serializable
 
     public function where(string $set = null) : ?string
     {
-        return $this->valueFunction('where', $set);
+        if ($set !== null) {
+            $this->where = $set;
+        }
+        return $this->where;
     }
 
     public function order(string $set = null) : ?string
     {
-        return $this->valueFunction('order', $set);
+        if ($set !== null) {
+            $this->order = $set;
+        }
+        return $this->order;
     }
 
     public function limit(int $set = null) : ?int
     {
-        return $this->valueFunction('limit', $set);
+        if ($set !== null) {
+            $this->limit = $set;
+        }
+        return $this->limit;
     }
 
     public function offset(int $set = null) : ?int
     {
-        return $this->valueFunction('offset', $set);
+        if ($set !== null) {
+            $this->offset = $set;
+        }
+        return $this->offset;
     }
 
     public function serialize()

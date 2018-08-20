@@ -21,13 +21,13 @@ In order to read/write objects from a database table, you'll need to configure a
 // DriverFactory::factory() has the same arguments as PDO::__construct
 // You can also construct a driver directly, from a class in Drivers,
 // but for common databases DriverFactory::factory should pick the right class
-$driver = \Digraph\DriverFactory::factory(
+$driver = \Destructr\DriverFactory::factory(
   'mysql:host=127.0.0.1',
   'username',
   'password'
 );
 // Driver is then used to construct a Factory
-$factory = new \Digraph\Destructr\Factory(
+$factory = new \Destructr\Factory(
   $driver,      //driver is used to manage connection and generate queries
   'dso_objects' //all of a Factory's data is stored in a single table
 );

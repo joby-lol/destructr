@@ -7,8 +7,8 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.1",
-        "digraphcms/utilities": "^0.6",
-        "mofodojodino/profanity-filter": "^1.3"
+        "mofodojodino/profanity-filter": "^1.3",
+        "byjoby/flatrr": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^7",
@@ -30,12 +30,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Digraph\\Destructr\\": "src/"
+            "Destructr\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Digraph\\Destructr\\": "tests/"
+            "Destructr\\": "tests/"
         }
     }
 }

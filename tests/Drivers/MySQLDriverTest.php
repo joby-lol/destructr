@@ -1,7 +1,7 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 declare(strict_types=1);
-namespace Digraph\Destructr\Drivers;
+namespace Destructr\Drivers;
 
 use PHPUnit\Framework\TestCase;
 

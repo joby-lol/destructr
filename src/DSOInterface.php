@@ -1,8 +1,8 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
-namespace Digraph\Destructr;
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+namespace Destructr;
 
-use Digraph\FlatArray\FlatArrayInterface;
+use Flatrr\FlatArrayInterface;
 
 /**
  * Interface for DeStructure Objects (DSOs). These are the class that is

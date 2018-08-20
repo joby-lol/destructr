@@ -1,12 +1,12 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 declare(strict_types=1);
-namespace Digraph\Destructr\Drivers;
+namespace Destructr\Drivers;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\DbUnit\TestCaseTrait;
-use Digraph\Destructr\DSO;
-use Digraph\Destructr\Search;
+use Destructr\DSO;
+use Destructr\Search;
 
 /**
  * This class tests a factory in isolation. In the name of simplicity it's a bit

@@ -1,10 +1,9 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
-namespace Digraph\Destructr\LegacyDrivers;
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+namespace Destructr\LegacyDrivers;
 
-use Digraph\Destructr\DSOInterface;
-use Digraph\FlatArray\FlatArray;
-use Digraph\Destructr\Factory;
+use Destructr\DSOInterface;
+use Destructr\Factory;
 
 /**
  * What this driver supports: Version of SQLite3 in PHP environments that allow
@@ -27,7 +26,7 @@ class SQLiteDriver extends AbstractLegacyDriver
          */
         $this->pdo->sqliteCreateFunction(
             'DESTRUCTR_JSON_EXTRACT',
-            '\\Digraph\\Destructr\\LegacyDrivers\\SQLiteDriver::JSON_EXTRACT',
+            '\\Destructr\\LegacyDrivers\\SQLiteDriver::JSON_EXTRACT',
             2
         );
     }

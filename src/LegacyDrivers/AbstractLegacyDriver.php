@@ -1,12 +1,12 @@
 <?php
-/* Digraph CMS: Destructr | https://github.com/digraphcms/destructr | MIT License */
-namespace Digraph\Destructr\LegacyDrivers;
+/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+namespace Destructr\LegacyDrivers;
 
-use Digraph\Destructr\Drivers\AbstractDriver;
-use Digraph\Destructr\DSOInterface;
-use Digraph\Destructr\Factory;
-use Digraph\Destructr\Search;
-use Digraph\FlatArray\FlatArray;
+use Destructr\Drivers\AbstractDriver;
+use Destructr\DSOInterface;
+use Destructr\Factory;
+use Destructr\Search;
+use Flatrr\FlatArray;
 
 /**
  * This driver is for supporting older SQL servers that don't have their own

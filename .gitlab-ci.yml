@@ -3,10 +3,20 @@ image:          php:7.1-alpine
 before_script:
   - apk update
   - apk add git
-  - docker-php-ext-install pdo pdo_mysql
+  - docker-php-ext-install pdo
   - curl -sS https://getcomposer.org/installer | php
   - php composer.phar install
 
-test:
+test:local:
   script:
-    - php composer.phar test
+    - php composer.phar test-local
+
+test:db:
+  script:
+    - docker-php-ext-install pdo_mysql
+    - php composer.phar test-db
+
+test:legacydb:
+  script:
+    - docker-php-ext-install pdo_sqlite
+    - php composer.phar test-legacydb

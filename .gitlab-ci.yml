@@ -1,7 +1,11 @@
 image:          php:7.1-alpine
 
 before_script:
-  - bash ci/docker_install.sh > /dev/null
+  - apk update
+  - apk add git
+  - docker-php-ext-install pdo_mysql pdo_sqlite
+  - curl -sS https://getcomposer.org/installer | php
+  - php composer.phar install
 
 test:local:
   script:

@@ -1,9 +1,8 @@
-image:            php:7.0
+image:          php:7.1-alpine
 
 before_script:
-  # Install dependencies
   - bash ci/docker_install.sh > /dev/null
 
 test:local:
   script:
-    - composer.phar test-local
+    - php composer.phar test-local

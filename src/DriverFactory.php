@@ -12,7 +12,7 @@ class DriverFactory
     public static function factory(string $dsn, string $username=null, string $password=null, array $options=null, string $type = null) : ?Drivers\DSODriverInterface
     {
         if (!$type) {
-            $type = array_shift(explode(':', $dsn, 2));
+            $type = @array_shift(explode(':', $dsn, 2));
         }
         $type = strtolower($type);
         if ($class = @static::$map[$type]) {

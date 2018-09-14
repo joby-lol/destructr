@@ -8,7 +8,7 @@
     "require": {
         "php": ">=7.1",
         "mofodojodino/profanity-filter": "^1.3",
-        "byjoby/flatrr": "dev-master"
+        "byjoby/flatrr": "^1"
     },
     "require-dev": {
         "phpunit/phpunit": "^7",

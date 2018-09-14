@@ -1,10 +1,11 @@
 <?php
 /* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 declare(strict_types=1);
-namespace Destructr\LegacyDrivers;
+namespace Destructr\LegacyDrivers\SQLite;
 
 use PHPUnit\Framework\TestCase;
 use Destructr\Drivers\AbstractDriverTest;
+use Destructr\LegacyDrivers\SQLiteDriver;
 
 class SQLiteDriverTest extends AbstractDriverTest
 {

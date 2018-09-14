@@ -1,7 +1,7 @@
 <?php
 /* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 declare(strict_types=1);
-namespace Destructr\LegacyDrivers\IntegrationTests;
+namespace Destructr\LegacyDrivers\SQLite;
 
 use PHPUnit\Framework\TestCase;
 use Destructr\Drivers\IntegrationTests\AbstractDriverIntegrationTest;

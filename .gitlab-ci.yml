@@ -16,6 +16,6 @@ test:local:
 #     - docker-php-ext-install pdo_mysql
 #     - php composer.phar test-db
 
-test:legacydb:
+test:sqlite:
   script:
-    - php composer.phar test-legacydb
+    - php composer.phar test-sqlite

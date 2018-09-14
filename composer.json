@@ -24,8 +24,8 @@
         "test-db": [
             "phpunit --testsuite DB"
         ],
-        "test-legacydb": [
-            "phpunit --testsuite LegacyDB"
+        "test-sqlite": [
+            "phpunit --testsuite SQLite"
         ]
     },
     "autoload": {

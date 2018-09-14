@@ -18,7 +18,7 @@ test:local:
   script:
     - php composer.phar test-local
 
-test:drivers:
+test:mysql:
   script:
     - docker-php-ext-install pdo_mysql
     - php composer.phar test-mysql

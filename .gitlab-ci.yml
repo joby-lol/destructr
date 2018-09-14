@@ -11,12 +11,11 @@ test:local:
   script:
     - php composer.phar test-local
 
-test:db:
-  script:
-    - docker-php-ext-install pdo_mysql
-    - php composer.phar test-db
+# test:db:
+#   script:
+#     - docker-php-ext-install pdo_mysql
+#     - php composer.phar test-db
 
 test:legacydb:
   script:
-    - docker-php-ext-install pdo_sqlite
     - php composer.phar test-legacydb

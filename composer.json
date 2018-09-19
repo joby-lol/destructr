@@ -21,11 +21,11 @@
         "test-local": [
             "phpunit --testsuite Local"
         ],
-        "test-db": [
-            "phpunit --testsuite DB"
+        "test-mysql": [
+            "phpunit --testsuite MySQL"
         ],
-        "test-legacydb": [
-            "phpunit --testsuite LegacyDB"
+        "test-sqlite": [
+            "phpunit --testsuite SQLite"
         ]
     },
     "autoload": {

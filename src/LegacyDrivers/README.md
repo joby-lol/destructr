@@ -41,19 +41,5 @@ using SQLite if you don't have access to a fully supported database version.
 
 ### MySQL 5.6
 
-**\Destructr\LegacyDrivers\MySQL56Driver**
-
-**Overall support level: Decent performance, highly suspect accuracy**
-
-LegacyDrivers\MySQL56Driver provides bare-minimum support for MySQL < 5.7.
-This driver now passes the basic tests and basic integration tests, but hasn't
-been verified in the slightest beyond that.
-
-It flattens unstructured JSON and uses a highly dodgy user-defined function to
-extract values from it. There are absolutely edge cases that will extract the
-wrong data. That said, outside of those edge cases it should actually work
-fairly well. All the sorting and filtering is happening in SQL, and things
-should mostly be fairly predictable.
-
-This driver should be your last resort. I cannot emphasize enough that this
-thing is extremely kludgey and should not be trusted.
+** No longer supported. You should really use SQLite if you don't have access to
+something better. Will most likely never be supported. **

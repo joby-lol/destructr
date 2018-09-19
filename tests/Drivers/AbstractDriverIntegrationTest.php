@@ -1,7 +1,7 @@
 <?php
 /* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
 declare(strict_types=1);
-namespace Destructr\Drivers\IntegrationTests;
+namespace Destructr\Drivers;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\DbUnit\TestCaseTrait;

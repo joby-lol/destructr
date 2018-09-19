@@ -83,7 +83,7 @@ abstract class AbstractDriver implements DSODriverInterface
         if (!$s->execute($params)) {
             return [];
         }
-        return $s->fetchAll(\PDO::FETCH_ASSOC);
+        return @$s->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function insert(string $table, DSOInterface $dso) : bool

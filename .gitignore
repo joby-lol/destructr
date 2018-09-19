@@ -3,4 +3,5 @@ composer.lock
 .phpunit.result.cache
 test.php
 test.sqlite
+*.test.sqlite
 .DS_Store

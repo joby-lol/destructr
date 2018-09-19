@@ -5,11 +5,11 @@
       <exclude>tests/Drivers</exclude>
       <exclude>tests/LegacyDrivers</exclude>
     </testsuite>
-    <testsuite name="DB">
-      <directory>tests/Drivers</directory>
+    <testsuite name="MySQL">
+      <directory>tests/Drivers/MySQL</directory>
     </testsuite>
-    <testsuite name="LegacyDB">
-      <directory>tests/LegacyDrivers</directory>
+    <testsuite name="SQLite">
+      <directory>tests/LegacyDrivers/SQLite</directory>
     </testsuite>
   </testsuites>
 </phpunit>

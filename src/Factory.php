@@ -267,4 +267,9 @@ class Factory implements DSOFactoryInterface
         } while ($check->hasProfanity($id));
         return $id;
     }
+
+    public function errorInfo()
+    {
+        return $this->driver->errorInfo();
+    }
 }

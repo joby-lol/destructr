@@ -52,7 +52,13 @@ class MySQLDriver extends AbstractDriver
         $lines = [];
         $lines[] = "`json_data` JSON DEFAULT NULL";
         foreach ($args['virtualColumns'] as $path => $col) {
-            $lines[] = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (".$this->expandPath($path).") VIRTUAL";
+            $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (".$this->expandPath($path).")";
+            if (@$col['primary']) {
+                $line .= ' PERSISTENT';
+            } else {
+                $line .= ' VIRTUAL';
+            }
+            $lines[] = $line;
         }
         foreach ($args['virtualColumns'] as $path => $col) {
             if (@$col['primary']) {

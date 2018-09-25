@@ -56,7 +56,7 @@ class MySQLDriver extends AbstractDriver
         }
         foreach ($args['virtualColumns'] as $path => $col) {
             if (@$col['primary']) {
-                $lines[] = "PRIMARY KEY ({$col['name']})";
+                $lines[] = "PRIMARY KEY (`{$col['name']}`)";
             } elseif (@$col['unique'] && $as = @$col['index']) {
                 $lines[] = "UNIQUE KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
             } elseif ($as = @$col['index']) {

@@ -74,7 +74,11 @@ class SQLiteDriver extends AbstractLegacyDriver
         $lines = [];
         $lines[] = "`json_data` TEXT DEFAULT NULL";
         foreach (Factory::CORE_VIRTUAL_COLUMNS as $path => $col) {
-            $lines[] = "`{$col['name']}` {$col['type']}";
+            $line = "`{$col['name']}` {$col['type']}";
+            if (@$col['primary']) {
+                $line .= ' PRIMARY KEY';
+            }
+            $lines[] = $line;
         }
         $out[] = implode(','.PHP_EOL, $lines);
         $out[] = ");";

@@ -36,7 +36,8 @@ class Factory implements DSOFactoryInterface
             'name'=>'dso_id',
             'type'=>'VARCHAR(16)',
             'index' => 'BTREE',
-            'unique' => true
+            'unique' => true,
+            'primary' => true
         ],
         'dso.type' => [
             'name'=>'dso_type',
@@ -57,7 +58,8 @@ class Factory implements DSOFactoryInterface
             'name'=>'dso_id',
             'type'=>'VARCHAR(16)',
             'index' => 'BTREE',
-            'unique' => true
+            'unique' => true,
+            'primary' => true
         ],
         'dso.type' => [
             'name'=>'dso_type',

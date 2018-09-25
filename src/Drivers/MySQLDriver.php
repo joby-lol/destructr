@@ -54,7 +54,8 @@ class MySQLDriver extends AbstractDriver
         foreach ($args['virtualColumns'] as $path => $col) {
             $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (".$this->expandPath($path).")";
             if (@$col['primary']) {
-                $line .= ' PERSISTENT';
+                //this needs to be "PERSISTENT" for MariaDB -- I guess there are going to be two drivers now
+                $line .= ' STORED';
             } else {
                 $line .= ' VIRTUAL';
             }

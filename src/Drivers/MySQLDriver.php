@@ -52,10 +52,19 @@ class MySQLDriver extends AbstractDriver
         $lines = [];
         $lines[] = "`json_data` JSON DEFAULT NULL";
         foreach ($args['virtualColumns'] as $path => $col) {
-            $lines[] = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (".$this->expandPath($path).") VIRTUAL";
+            $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (".$this->expandPath($path).")";
+            if (@$col['primary']) {
+                //this needs to be "PERSISTENT" for MariaDB -- I guess there are going to be two drivers now
+                $line .= ' STORED';
+            } else {
+                $line .= ' VIRTUAL';
+            }
+            $lines[] = $line;
         }
         foreach ($args['virtualColumns'] as $path => $col) {
-            if (@$col['unique'] && $as = @$col['index']) {
+            if (@$col['primary']) {
+                $lines[] = "PRIMARY KEY (`{$col['name']}`)";
+            } elseif (@$col['unique'] && $as = @$col['index']) {
                 $lines[] = "UNIQUE KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
             } elseif ($as = @$col['index']) {
                 $lines[] = "KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";

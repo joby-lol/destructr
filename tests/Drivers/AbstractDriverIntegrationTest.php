@@ -23,7 +23,11 @@ abstract class AbstractDriverIntegrationTest extends TestCase
     {
         $factory = $this->createFactory();
         //should work the first time
-        $this->assertTrue($factory->createTable());
+        $out = $factory->createTable();
+        if (!$out) {
+            var_dump($factory->errorInfo());
+        }
+        $this->assertTrue($out);
         //but not the second time, because it already exists
         $this->assertFalse($factory->createTable());
         //table should exist and have zero rows

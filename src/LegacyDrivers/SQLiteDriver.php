@@ -44,7 +44,7 @@ class SQLiteDriver extends AbstractLegacyDriver
                 return null;
             }
         }
-        return $out;
+        return @"$out";
     }
 
     public function createTable(string $table, array $virtualColumns) : bool

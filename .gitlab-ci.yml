@@ -1,7 +1,7 @@
 image:                 php:7.1-alpine
 
 services:
-  - mysql:latest
+  - mysql:5.7
 
 variables:
   MYSQL_DATABASE:      destructr_test

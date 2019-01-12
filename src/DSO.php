@@ -71,7 +71,7 @@ class DSO extends FlatArray implements DSOInterface
     public function set(string $name = null, $value, $force=false)
     {
         $name = strtolower($name);
-        if ($this->get($name) == $value) {
+        if ($this->get($name) === $value) {
             return;
         }
         if (is_array($value)) {
@@ -85,6 +85,8 @@ class DSO extends FlatArray implements DSOInterface
                         $this->unset($k);
                     }
                 }
+            } else {
+                parent::set($name, []);
             }
             //recursively set individual values so we can track them
             foreach ($value as $k => $v) {

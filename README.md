@@ -82,8 +82,6 @@ $obj->delete(true);
 
 Currently, Destructr is best supported by MySQL 5.7, SQLite 3, and MariaDB >=10.2.
 
-If you only have access to a MySQL 5.6 server there is a driver available, but it's buggy and not as well tested.
-Given the choice, you should almost always choose SQLite over MySQL <=5.6.
 The SQLite driver is actually very fast in benchmarks, and performs very close to the same speed as MySQL 5.7 for simple queries or small databases with object counts on the order of a few thousand.
 For efficient indexing of non-standard JSON paths or large numbers of objects, MySQL 5.7 or MariaDB >=10.2 is highly recommended.
 

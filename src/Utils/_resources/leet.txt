@@ -1,0 +1,15 @@
+a 4
+b 8
+ck xx?
+ex ecks
+e 3
+f ph
+g 6
+i l
+i 1
+o 0
+qu kw
+s 5
+s z
+t 7
+z 2

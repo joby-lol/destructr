@@ -1,82 +1,32 @@
-# Destructr
+# Digraph DataObject v0.5
 
-Destructr is a specialized ORM that allows a seamless mix of structured, relational data with unstructured JSON data.
+[![Build Status](https://travis-ci.org/digraphcms/digraph-dataobject.svg?branch=v0.5)](https://travis-ci.org/digraphcms/digraph-dataobject)
 
-## Getting started
+*This is not going to be the final version of Digraph DataObjects.*
+I will be supporting the v0.5 branch with its current interface, at least for myself, because I am using it in a few production projects. Those projects are stuck on some pretty weird old custom builds of PHP, and so this branch will be maintaining PHP 5.3 compatibility for the foreseeable future. If you're on a more recent version than PHP 5.3 (as you very much should be), you shouldn't use this branch. You should instead wait for the 1.0 release, which should hopefully be in 2018 sometime. The 1.0 branch will fix a lot of conceptual shortcomings of the alpha versions, and is designed to target modern environments and take full advantage of all the features of PHP 7.1 that make it finally act something like a grown-up programming language.
 
-The purpose of Destructr is to allow many "types" of objects to be stored in a single table.
-Every Destructr Data Object (DSO) simply contains an array of data that will be saved into the database as JSON.
-Array access is also flattened, using dots as delimiters, so rather than reading `$dso["foo"]["bar"]` you access that data via `$dso["foo.bar"]`.
-This is for two reasons.
-It sidesteps the issue of updating nested array values by reference, and it creates an unambiguous way of locating a node of the unstructured data with a string, which mirrors how we can write SQL queries to reference them.
+So I guess in a nutshell: This version is relatively stable, and the author is actually using it in production. The interface shouldn't change significantly, unless I find something absolutely terrible. You still probably shouldn't use it, though, because it's targeting a truly decrepit version of PHP and better things are on the way.
 
-If this sounds like an insanely slow idea, that's because it is.
-Luckily MySQL and MariaDB have mechanisms we can take advantage of to make generated columns from any part of the unstructured data, so that pieces of it can be pulled out into their own virtual columns for indexing and faster searching/sorting.
+Also this version will probably never be properly documented.
 
-### Database driver and factory
+## MIT License
 
-In order to read/write objects from a database table, you'll need to configure a Driver and Factory class.
+Copyright (c) 2017 Joby Elliott <joby@byjoby.com>
 
-```php
-// DriverFactory::factory() has the same arguments as PDO::__construct
-// You can also construct a driver directly, from a class in Drivers,
-// but for common databases DriverFactory::factory should pick the right class
-$driver = \Destructr\DriverFactory::factory(
-  'mysql:host=127.0.0.1',
-  'username',
-  'password'
-);
-// Driver is then used to construct a Factory
-$factory = new \Destructr\Factory(
-  $driver,      //driver is used to manage connection and generate queries
-  'dso_objects' //all of a Factory's data is stored in a single table
-);
-```
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-### Creating a new record
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Next, you can use the factory to create a new record object.
-
-```php
-// by default all objects are the DSO class, but factories can be made to use
-// other classes depending on what data objects are instantiated with
-$obj = $factory->create();
-
-// returns boolean indicating whether insertion succeeded
-// insert() must be called before update() will work
-$obj->insert();
-
-// set a new value and call update() to save changes into database. update()
-// will return true without doing anything if no changes have been made.
-$obj['foo.bar'] = 'some value';
-$obj->update();
-
-// deleting an object will by default just set dso.deleted to the current time
-// objects with a non-null dso.deleted are excluded from queries by default
-// delete() calls update() inside it, so its effect is immediate
-$obj->delete();
-
-// objects that were deleted via default delete() are recoverable via undelete()
-// undelete() also calls update() for you
-$obj->undelete();
-
-// objects can be actually removed from the table by calling delete(true)
-$obj->delete(true);
-```
-
-## Requirements
-
-This system relies **heavily** on the JSON features of the underlying database.
-This means it cannot possibly run without a database that supports JSON features.
-Exact requirements are in flux during development, but basically if a database doesn't have JSON functions it's probably impossible for Destructr to ever work with it.
-
-In practice this means Destructr will **never** be able to run on less than the following versions of the following popular databases:
-
-* MySQL >=5.7
-* MariaDB >=10.2
-* PostgreSQL >=9.3
-* SQL Server >=2016
-
-Theoretically Destructr is also an excellent fit for NoSQL databases.
-If I ever find myself needing it there's a good chance it's possible to write drivers for running it on something like MongoDB as well.
-It might even be kind of easy.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

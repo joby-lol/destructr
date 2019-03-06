@@ -1,15 +1,7 @@
 <phpunit bootstrap="vendor/autoload.php">
   <testsuites>
-    <testsuite name="Local">
+    <testsuite name="Digraph Tests">
       <directory>tests</directory>
-      <exclude>tests/Drivers</exclude>
-      <exclude>tests/LegacyDrivers</exclude>
-    </testsuite>
-    <testsuite name="MySQL">
-      <directory>tests/Drivers/MySQL</directory>
-    </testsuite>
-    <testsuite name="SQLite">
-      <directory>tests/LegacyDrivers/SQLite</directory>
     </testsuite>
   </testsuites>
 </phpunit>

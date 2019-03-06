@@ -53,7 +53,9 @@ class JSON extends AbstractDataTransformer implements \ArrayAccess, \Iterator
     {
         if (is_array($userValue)) {
             foreach ($userValue as $key => $value) {
-                $this[$key] = $value;
+                if ($value !== null) {
+                    $this[$key] = $value;
+                }
             }
         }
     }

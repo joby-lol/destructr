@@ -97,6 +97,10 @@ class JSON extends AbstractDataTransformer implements \ArrayAccess, \Iterator
 
     public function offsetSet($offset, $value)
     {
+        //do nothing for null values
+        if ($value === null) {
+            return;
+        }
         //set offset
         if (is_null($offset)) {
             $this->arrayAccessData[] = $value;

@@ -21,4 +21,19 @@ class DriverFactory
             return null;
         }
     }
+
+    public static function factoryFromPDO(\PDO &$pdo, string $type = null) : ?Drivers\DSODriverInterface
+    {
+        if (!$type) {
+            $type = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        }
+        $type = strtolower($type);
+        if ($class = @static::$map[$type]) {
+            $f = new $class();
+            $f->pdo($pdo);
+            return $f;
+        } else {
+            return null;
+        }
+    }
 }

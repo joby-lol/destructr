@@ -12,11 +12,22 @@ abstract class AbstractDriver implements DSODriverInterface
     public $pdo;
     const EXTENSIBLE_VIRTUAL_COLUMNS = true;
 
-    public function __construct(string $dsn, string $username=null, string $password=null, array $options=null)
+    public function __construct(string $dsn=null, string $username=null, string $password=null, array $options=null)
     {
-        if (!$this->pdo = new \PDO($dsn, $username, $password, $options)) {
-            throw new \Exception("Error creating PDO connection");
+        if ($dsn) {
+            if (!($pdo = new \PDO($dsn, $username, $password, $options))) {
+                throw new \Exception("Error creating PDO connection");
+            }
+            $this->pdo($pdo);
         }
+    }
+
+    public function &pdo(\PDO &$pdo=null) : ?\PDO
+    {
+        if ($pdo) {
+            $this->pdo = $pdo;
+        }
+        return $this->pdo;
     }
 
     protected function expandPaths($value)

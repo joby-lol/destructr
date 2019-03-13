@@ -16,19 +16,22 @@ use Destructr\Factory;
  */
 class SQLiteDriver extends AbstractLegacyDriver
 {
-    public function __construct(string $dsn, string $username=null, string $password=null, array $options=null)
+    public function &pdo(\PDO &$pdo=null) : ?\PDO
     {
-        parent::__construct($dsn, $username, $password, $options);
-        /*
-        What we're doing here is adding a custom function to SQLite so that it
-        can extract JSON values. It's not fast, but it does let us use JSON
-        fairly seamlessly.
-         */
-        $this->pdo->sqliteCreateFunction(
-            'DESTRUCTR_JSON_EXTRACT',
-            '\\Destructr\\LegacyDrivers\\SQLiteDriver::JSON_EXTRACT',
-            2
-        );
+        if ($pdo) {
+            $this->pdo = $pdo;
+            /*
+            What we're doing here is adding a custom function to SQLite so that it
+            can extract JSON values. It's not fast, but it does let us use JSON
+            fairly seamlessly.
+             */
+            $this->pdo->sqliteCreateFunction(
+                'DESTRUCTR_JSON_EXTRACT',
+                '\\Destructr\\LegacyDrivers\\SQLiteDriver::JSON_EXTRACT',
+                2
+            );
+        }
+        return $this->pdo;
     }
 
     public static function JSON_EXTRACT($json, $path)

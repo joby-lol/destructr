@@ -21,7 +21,7 @@ interface DSOInterface extends FlatArrayInterface
     public function removals() : array;
 
     public function insert() : bool;
-    public function update() : bool;
+    public function update(bool $sneaky = false) : bool;
     public function delete(bool $permanent = false) : bool;
     public function undelete() : bool;
 }

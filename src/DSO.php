@@ -47,7 +47,7 @@ class DSO extends FlatArray implements DSOInterface
         return $this->factory()->insert($this);
     }
 
-    public function update() : bool
+    public function update(bool $sneaky = false) : bool
     {
         return $this->factory()->update($this);
     }

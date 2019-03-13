@@ -109,13 +109,13 @@ class Factory implements DSOFactoryInterface
             return $this->driver->delete($this->table, $dso);
         }
         $dso['dso.deleted'] = time();
-        return $this->update($dso);
+        return $this->update($dso, true);
     }
 
     public function undelete(DSOInterface &$dso) : bool
     {
         unset($dso['dso.deleted']);
-        return $this->update($dso);
+        return $this->update($dso, true);
     }
 
     public function create(array $data = array()) : DSOInterface
@@ -148,13 +148,15 @@ class Factory implements DSOFactoryInterface
         return @$vcols[$path]['name'];
     }
 
-    public function update(DSOInterface &$dso) : bool
+    public function update(DSOInterface &$dso, bool $sneaky = false) : bool
     {
         if (!$dso->changes() && !$dso->removals()) {
             return true;
         }
-        $this->hook_update($dso);
-        $dso->hook_update();
+        if (!$sneaky) {
+            $this->hook_update($dso);
+            $dso->hook_update();
+        }
         $out = $this->driver->update($this->table, $dso);
         $dso->resetChanges();
         return $out;

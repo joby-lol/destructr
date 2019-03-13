@@ -12,7 +12,7 @@ interface DSOFactoryInterface
     public function create(array $data = array()) : DSOInterface;
     public function read(string $value, string $field = 'dso.id', $deleted = false) : ?DSOInterface;
     public function insert(DSOInterface &$dso) : bool;
-    public function update(DSOInterface &$dso) : bool;
+    public function update(DSOInterface &$dso, bool $sneaky = false) : bool;
     public function delete(DSOInterface &$dso, bool $permanent = false) : bool;
 
     public function search() : Search;

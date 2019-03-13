@@ -10,8 +10,12 @@ class HarnessDriver implements Drivers\DSODriverInterface
     public $last_update;
     public $last_delete;
 
-    public function __construct(string $dsn, string $username=null, string $password=null, array $options=null)
+    public function __construct(string $dsn=null, string $username=null, string $password=null, array $options=null)
     {
+    }
+
+    public function &pdo(\PDO &$pdo=null) : ?\PDO {
+        return null;
     }
 
     public function createTable(string $table, array $virtualColumns) : bool

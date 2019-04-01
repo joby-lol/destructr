@@ -218,6 +218,8 @@ class Factory implements DSOFactoryInterface
         $search = new Search($this);
         $search->where($input->where());
         $search->order($input->order());
+        $search->limit($input->limit());
+        $search->offset($input->offset());
         /* add deletion awareness to where clause */
         if ($deleted !== null) {
             $where = $search->where();

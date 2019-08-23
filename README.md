@@ -77,6 +77,11 @@ In practice this means Destructr will **never** be able to run on less than the 
 * PostgreSQL >=9.3
 * SQL Server >=2016
 
+There is also a SQLite driver available that inserts a PHP JSON function.
+It doesn't support generated columns, so its indexing and optimization capabilities are limited.
+Nevertheless, SQLite can be reasonably performant for many smaller/simpler applications.
+For more information see [the legacy drivers readme](src/LegacyDrivers/README.md).
+
 Theoretically Destructr is also an excellent fit for NoSQL databases.
 If I ever find myself needing it there's a good chance it's possible to write drivers for running it on something like MongoDB as well.
 It might even be kind of easy.

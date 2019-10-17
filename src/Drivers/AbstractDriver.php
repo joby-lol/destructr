@@ -85,6 +85,18 @@ abstract class AbstractDriver implements DSODriverInterface
         ]);
     }
 
+    public function count(string $table, Search $search, array $params)
+    {
+        $s = $this->getStatement(
+            'count',
+            ['table'=>$table,'search'=>$search]
+        );
+        if (!$s->execute($params)) {
+            return null;
+        }
+        return intval($s->fetchAll(\PDO::FETCH_COLUMN)[0]);
+    }
+
     public function select(string $table, Search $search, array $params)
     {
         $s = $this->getStatement(

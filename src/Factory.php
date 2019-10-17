@@ -181,6 +181,18 @@ class Factory implements DSOFactoryInterface
         return $arr;
     }
 
+    public function executeCount(Search $search, array $params = array(), $deleted = false) : ?int
+    {
+        //add deletion clause and expand column names
+        $search = $this->preprocessSearch($search, $deleted);
+        //run select
+        return $this->driver->count(
+            $this->table,
+            $search,
+            $params
+        );
+    }
+
     public function executeSearch(Search $search, array $params = array(), $deleted = false) : array
     {
         //add deletion clause and expand column names

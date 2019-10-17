@@ -17,4 +17,5 @@ interface DSOFactoryInterface
 
     public function search() : Search;
     public function executeSearch(Search $search, array $params = array(), $deleted = false) : array;
+    public function executeCount(Search $search, array $params = array(), $deleted = false) : ?int;
 }

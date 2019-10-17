@@ -18,6 +18,11 @@ class Search implements \Serializable
         $this->factory = $factory;
     }
 
+    public function count(array $params = array(), $deleted = false)
+    {
+        return $this->factory->executeCount($this, $params, $deleted);
+    }
+
     public function execute(array $params = array(), $deleted = false)
     {
         return $this->factory->executeSearch($this, $params, $deleted);

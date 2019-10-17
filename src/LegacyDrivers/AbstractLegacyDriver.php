@@ -34,6 +34,20 @@ class AbstractLegacyDriver extends AbstractDriver
         return $results;
     }
 
+    protected function sql_count($args)
+    {
+        //extract query parts from Search and expand paths
+        $where = $this->expandPaths($args['search']->where());
+        //select from
+        $out = ["SELECT count(dso_id) FROM `{$args['table']}`"];
+        //where statement
+        if ($where !== null) {
+            $out[] = "WHERE ".$where;
+        }
+        //return
+        return implode(PHP_EOL, $out).';';
+    }
+
     protected function sql_select($args)
     {
         //extract query parts from Search and expand paths

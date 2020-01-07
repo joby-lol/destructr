@@ -20,7 +20,7 @@ class Search implements \Serializable
 
     public function quote(string $str) : string
     {
-        return $this->factory()->quote($str);
+        return $this->factory->quote($str);
     }
 
     public function count(array $params = array(), $deleted = false)

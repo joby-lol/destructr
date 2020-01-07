@@ -14,6 +14,7 @@ interface DSOFactoryInterface
     public function insert(DSOInterface &$dso) : bool;
     public function update(DSOInterface &$dso, bool $sneaky = false) : bool;
     public function delete(DSOInterface &$dso, bool $permanent = false) : bool;
+    public function quote(string $str) : string;
 
     public function search() : Search;
     public function executeSearch(Search $search, array $params = array(), $deleted = false) : array;

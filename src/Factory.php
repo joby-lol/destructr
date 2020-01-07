@@ -79,6 +79,11 @@ class Factory implements DSOFactoryInterface
         $this->table = $table;
     }
 
+    public function quote(string $str) : string
+    {
+        return $this->driver->pdo()->quote($str);
+    }
+
     protected function hook_create(DSOInterface &$dso)
     {
         if (!$dso->get('dso.id')) {

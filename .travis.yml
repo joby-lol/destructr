@@ -3,7 +3,7 @@ services:
   - mysql
 php:
   - 7.3
-  # - 7.4
+  - 7.4
 before_install:
   - mysql -e 'CREATE DATABASE test'
 install:

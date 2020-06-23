@@ -1,5 +1,7 @@
 # Destructr
 
+[![Build Status](https://travis-ci.org/jobyone/destructr.svg?branch=main)](https://travis-ci.org/jobyone/destructr)
+
 Destructr is a specialized ORM that allows a seamless mix of structured, relational data with unstructured JSON data.
 
 ## Getting started

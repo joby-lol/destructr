@@ -14,7 +14,7 @@ class HarnessDriver implements Drivers\DSODriverInterface
     {
     }
 
-    public function &pdo(\PDO &$pdo=null) : ?\PDO {
+    public function pdo(\PDO $pdo=null) : ?\PDO {
         return null;
     }
 

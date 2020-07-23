@@ -11,8 +11,8 @@ use Flatrr\FlatArrayInterface;
  */
 interface DSOInterface extends FlatArrayInterface
 {
-    public function __construct(array $data = null, DSOFactoryInterface &$factory = null);
-    public function factory(DSOFactoryInterface &$factory = null) : ?DSOFactoryInterface;
+    public function __construct(array $data = null, DSOFactoryInterface $factory = null);
+    public function factory(DSOFactoryInterface $factory = null) : ?DSOFactoryInterface;
 
     public function set(string $name = null, $value, $force=false);
 

@@ -13,7 +13,7 @@ class Search implements \Serializable
     protected $limit;
     protected $offset;
 
-    public function __construct(DSOFactoryInterface &$factory=null)
+    public function __construct(DSOFactoryInterface $factory=null)
     {
         $this->factory = $factory;
     }

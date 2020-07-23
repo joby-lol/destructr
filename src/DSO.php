@@ -15,7 +15,7 @@ class DSO extends FlatArray implements DSOInterface
     protected $changes;
     protected $removals;
 
-    public function __construct(array $data = null, DSOFactoryInterface &$factory = null)
+    public function __construct(array $data = null, DSOFactoryInterface $factory = null)
     {
         $this->resetChanges();
         parent::__construct($data);
@@ -111,7 +111,7 @@ class DSO extends FlatArray implements DSOInterface
         }
     }
 
-    public function factory(DSOFactoryInterface &$factory = null) : ?DSOFactoryInterface
+    public function factory(DSOFactoryInterface $factory = null) : ?DSOFactoryInterface
     {
         if ($factory) {
             $this->factory = $factory;

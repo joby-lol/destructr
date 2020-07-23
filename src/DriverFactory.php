@@ -22,7 +22,7 @@ class DriverFactory
         }
     }
 
-    public static function factoryFromPDO(\PDO &$pdo, string $type = null) : ?Drivers\DSODriverInterface
+    public static function factoryFromPDO(\PDO $pdo, string $type = null) : ?Drivers\DSODriverInterface
     {
         if (!$type) {
             $type = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);

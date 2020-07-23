@@ -16,7 +16,7 @@ use Destructr\Factory;
  */
 class SQLiteDriver extends AbstractLegacyDriver
 {
-    public function &pdo(\PDO &$pdo=null) : ?\PDO
+    public function pdo(\PDO $pdo=null) : ?\PDO
     {
         if ($pdo) {
             $this->pdo = $pdo;

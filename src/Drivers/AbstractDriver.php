@@ -22,7 +22,7 @@ abstract class AbstractDriver implements DSODriverInterface
         }
     }
 
-    public function &pdo(\PDO &$pdo=null) : ?\PDO
+    public function pdo(\PDO $pdo=null) : ?\PDO
     {
         if ($pdo) {
             $this->pdo = $pdo;

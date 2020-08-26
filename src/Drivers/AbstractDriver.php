@@ -26,7 +26,6 @@ abstract class AbstractDriver implements DSODriverInterface
     public function pdo(\PDO $pdo = null): ?\PDO
     {
         if ($pdo) {
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->pdo = $pdo;
         }

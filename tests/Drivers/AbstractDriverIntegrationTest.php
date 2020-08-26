@@ -1,13 +1,11 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
-declare(strict_types=1);
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
+declare (strict_types = 1);
 namespace Destructr\Drivers;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\DbUnit\TestCaseTrait;
-use Destructr\DSO;
-use Destructr\Search;
 use Destructr\Factory;
+use PHPUnit\DbUnit\TestCaseTrait;
+use PHPUnit\Framework\TestCase;
 
 abstract class AbstractDriverIntegrationTest extends TestCase
 {
@@ -16,7 +14,7 @@ abstract class AbstractDriverIntegrationTest extends TestCase
     public static function setUpBeforeClass()
     {
         $pdo = static::createPDO();
-        $pdo->exec('DROP TABLE '.static::TEST_TABLE);
+        $pdo->exec('DROP TABLE ' . static::TEST_TABLE);
     }
 
     public function testCreateTable()
@@ -39,12 +37,12 @@ abstract class AbstractDriverIntegrationTest extends TestCase
         $startRowCount = $this->getConnection()->getRowCount(static::TEST_TABLE);
         $factory = $this->createFactory();
         //inserting a freshly created object should return true
-        $o = $factory->create(['dso.id'=>'object-one']);
+        $o = $factory->create(['dso.id' => 'object-one']);
         $this->assertTrue($o->insert());
         //inserting it a second time should not
         $this->assertFalse($o->insert());
         //there should now be one more row
-        $this->assertEquals($startRowCount+1, $this->getConnection()->getRowCount(static::TEST_TABLE));
+        $this->assertEquals($startRowCount + 1, $this->getConnection()->getRowCount(static::TEST_TABLE));
     }
 
     public function testReadAndUpdate()
@@ -52,9 +50,9 @@ abstract class AbstractDriverIntegrationTest extends TestCase
         $startRowCount = $this->getConnection()->getRowCount(static::TEST_TABLE);
         $factory = $this->createFactory();
         //insert some new objects
-        $a1 = $factory->create(['foo'=>'bar']);
+        $a1 = $factory->create(['foo' => 'bar']);
         $a1->insert();
-        $b1 = $factory->create(['foo.bar'=>'baz']);
+        $b1 = $factory->create(['foo.bar' => 'baz']);
         $b1->insert();
         //read objects back out
         $a2 = $factory->read($a1['dso.id']);
@@ -77,7 +75,7 @@ abstract class AbstractDriverIntegrationTest extends TestCase
         $this->assertNotEquals($a1->get(), $a3->get());
         $this->assertNotEquals($b1->get(), $b3->get());
         //there should now be two more rows
-        $this->assertEquals($startRowCount+2, $this->getConnection()->getRowCount(static::TEST_TABLE));
+        $this->assertEquals($startRowCount + 2, $this->getConnection()->getRowCount(static::TEST_TABLE));
     }
 
     public function testDelete()
@@ -85,17 +83,17 @@ abstract class AbstractDriverIntegrationTest extends TestCase
         $startRowCount = $this->getConnection()->getRowCount(static::TEST_TABLE);
         $factory = $this->createFactory();
         //insert some new objects
-        $a1 = $factory->create(['testDelete'=>'undelete me']);
+        $a1 = $factory->create(['testDelete' => 'undelete me']);
         $a1->insert();
-        $b1 = $factory->create(['testDelete'=>'should be permanently deleted']);
+        $b1 = $factory->create(['testDelete' => 'should be permanently deleted']);
         $b1->insert();
         //there should now be two more rows
-        $this->assertEquals($startRowCount+2, $this->getConnection()->getRowCount(static::TEST_TABLE));
+        $this->assertEquals($startRowCount + 2, $this->getConnection()->getRowCount(static::TEST_TABLE));
         //delete one permanently and the other not, both shoudl take effect immediately
         $a1->delete();
         $b1->delete(true);
         //there should now be only one more row
-        $this->assertEquals($startRowCount+1, $this->getConnection()->getRowCount(static::TEST_TABLE));
+        $this->assertEquals($startRowCount + 1, $this->getConnection()->getRowCount(static::TEST_TABLE));
         //a should be possible to read a back out with the right flags
         $this->assertNull($factory->read($a1['dso.id']));
         $this->assertNotNull($factory->read($a1['dso.id'], 'dso.id', true));
@@ -116,25 +114,25 @@ abstract class AbstractDriverIntegrationTest extends TestCase
         $factory->create([
             'testSearch' => 'a',
             'a' => '1',
-            'b' => '2'
+            'b' => '2',
         ])->insert();
         $factory->create([
             'testSearch' => 'b',
             'a' => '2',
-            'b' => '1'
+            'b' => '1',
         ])->insert();
         $factory->create([
             'testSearch' => 'c',
             'a' => '3',
-            'b' => '4'
+            'b' => '4',
         ])->insert();
         $factory->create([
             'testSearch' => 'a',
             'a' => '4',
-            'b' => '3'
+            'b' => '3',
         ])->insert();
         //there should now be four more rows
-        $this->assertEquals($startRowCount+4, $this->getConnection()->getRowCount(static::TEST_TABLE));
+        $this->assertEquals($startRowCount + 4, $this->getConnection()->getRowCount(static::TEST_TABLE));
         //TODO: test some searches
     }
 

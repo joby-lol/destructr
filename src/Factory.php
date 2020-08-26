@@ -1,5 +1,5 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr;
 
 use mofodojodino\ProfanityFilter\Check;
@@ -73,7 +73,7 @@ class Factory implements DSOFactoryInterface
         ]
     ];
 
-    public function __construct(Drivers\DSODriverInterface &$driver, string $table)
+    public function __construct(Drivers\DSODriverInterface $driver, string $table)
     {
         $this->driver = $driver;
         $this->table = $table;
@@ -84,7 +84,7 @@ class Factory implements DSOFactoryInterface
         return $this->driver->pdo()->quote($str);
     }
 
-    protected function hook_create(DSOInterface &$dso)
+    protected function hook_create(DSOInterface $dso)
     {
         if (!$dso->get('dso.id')) {
             $dso->set('dso.id', static::generate_id(static::ID_CHARS, static::ID_LENGTH), true);
@@ -97,18 +97,27 @@ class Factory implements DSOFactoryInterface
         }
     }
 
-    protected function hook_update(DSOInterface &$dso)
+    protected function hook_update(DSOInterface $dso)
     {
         $dso->set('dso.modified.date', time());
         $dso->set('dso.modified.user', ['ip'=>@$_SERVER['REMOTE_ADDR']]);
     }
 
+    /**
+     * Override this function to allow a factory to create different
+     * sub-classes of DSO based on attributes of the given object's
+     * data. For example, you could use a property like dso.class to
+     * select a class from an associative array.
+     *
+     * @param array $data
+     * @return string|null
+     */
     public function class(array $data) : ?string
     {
         return null;
     }
 
-    public function delete(DSOInterface &$dso, bool $permanent = false) : bool
+    public function delete(DSOInterface $dso, bool $permanent = false) : bool
     {
         if ($permanent) {
             return $this->driver->delete($this->table, $dso);
@@ -117,7 +126,7 @@ class Factory implements DSOFactoryInterface
         return $this->update($dso, true);
     }
 
-    public function undelete(DSOInterface &$dso) : bool
+    public function undelete(DSOInterface $dso) : bool
     {
         unset($dso['dso.deleted']);
         return $this->update($dso, true);
@@ -153,7 +162,7 @@ class Factory implements DSOFactoryInterface
         return @$vcols[$path]['name'];
     }
 
-    public function update(DSOInterface &$dso, bool $sneaky = false) : bool
+    public function update(DSOInterface $dso, bool $sneaky = false) : bool
     {
         if (!$dso->changes() && !$dso->removals()) {
             return true;
@@ -221,7 +230,7 @@ class Factory implements DSOFactoryInterface
         return null;
     }
 
-    public function insert(DSOInterface &$dso) : bool
+    public function insert(DSOInterface $dso) : bool
     {
         $this->hook_update($dso);
         $dso->hook_update();

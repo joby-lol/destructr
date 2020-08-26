@@ -1,9 +1,10 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr\Drivers;
 
 use Destructr\DSOInterface;
 use Destructr\Search;
+use PDO;
 
 //TODO: Caching? It should happen somewhere in this class I think.
 abstract class AbstractDriver implements DSODriverInterface
@@ -12,7 +13,7 @@ abstract class AbstractDriver implements DSODriverInterface
     public $pdo;
     const EXTENSIBLE_VIRTUAL_COLUMNS = true;
 
-    public function __construct(string $dsn=null, string $username=null, string $password=null, array $options=null)
+    public function __construct(string $dsn = null, string $username = null, string $password = null, array $options = null)
     {
         if ($dsn) {
             if (!($pdo = new \PDO($dsn, $username, $password, $options))) {
@@ -22,9 +23,11 @@ abstract class AbstractDriver implements DSODriverInterface
         }
     }
 
-    public function &pdo(\PDO &$pdo=null) : ?\PDO
+    public function pdo(\PDO $pdo = null): ?\PDO
     {
         if ($pdo) {
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->pdo = $pdo;
         }
         return $this->pdo;
@@ -50,38 +53,38 @@ abstract class AbstractDriver implements DSODriverInterface
         return $this->pdo->errorInfo();
     }
 
-    public function createTable(string $table, array $virtualColumns) : bool
+    public function createTable(string $table, array $virtualColumns): bool
     {
         $sql = $this->sql_ddl([
-            'table'=>$table,
-            'virtualColumns'=>$virtualColumns
+            'table' => $table,
+            'virtualColumns' => $virtualColumns,
         ]);
         return $this->pdo->exec($sql) !== false;
     }
 
-    public function update(string $table, DSOInterface $dso) : bool
+    public function update(string $table, DSOInterface $dso): bool
     {
         if (!$dso->changes() && !$dso->removals()) {
             return true;
         }
         $s = $this->getStatement(
             'setJSON',
-            ['table'=>$table]
+            ['table' => $table]
         );
         return $s->execute([
             ':dso_id' => $dso['dso.id'],
-            ':data' => json_encode($dso->get())
+            ':data' => json_encode($dso->get()),
         ]);
     }
 
-    public function delete(string $table, DSOInterface $dso) : bool
+    public function delete(string $table, DSOInterface $dso): bool
     {
         $s = $this->getStatement(
             'delete',
-            ['table'=>$table]
+            ['table' => $table]
         );
         return $s->execute([
-            ':dso_id' => $dso['dso.id']
+            ':dso_id' => $dso['dso.id'],
         ]);
     }
 
@@ -89,7 +92,7 @@ abstract class AbstractDriver implements DSODriverInterface
     {
         $s = $this->getStatement(
             'count',
-            ['table'=>$table,'search'=>$search]
+            ['table' => $table, 'search' => $search]
         );
         if (!$s->execute($params)) {
             return null;
@@ -101,7 +104,7 @@ abstract class AbstractDriver implements DSODriverInterface
     {
         $s = $this->getStatement(
             'select',
-            ['table'=>$table,'search'=>$search]
+            ['table' => $table, 'search' => $search]
         );
         if (!$s->execute($params)) {
             return [];
@@ -109,19 +112,19 @@ abstract class AbstractDriver implements DSODriverInterface
         return @$s->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function insert(string $table, DSOInterface $dso) : bool
+    public function insert(string $table, DSOInterface $dso): bool
     {
         return $this->getStatement(
             'insert',
-            ['table'=>$table]
+            ['table' => $table]
         )->execute(
-            [':data'=>json_encode($dso->get())]
+            [':data' => json_encode($dso->get())]
         );
     }
 
-    protected function getStatement(string $type, $args=array()) : \PDOStatement
+    protected function getStatement(string $type, $args = array()): \PDOStatement
     {
-        $fn = 'sql_'.$type;
+        $fn = 'sql_' . $type;
         if (!method_exists($this, $fn)) {
             throw new \Exception("Error getting SQL statement, driver doesn't have a method named $fn");
         }
@@ -129,7 +132,7 @@ abstract class AbstractDriver implements DSODriverInterface
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt) {
             $this->lastPreparationErrorOn = $sql;
-            throw new \Exception("Error preparing statement: ".implode(': ', $this->pdo->errorInfo()), 1);
+            throw new \Exception("Error preparing statement: " . implode(': ', $this->pdo->errorInfo()), 1);
         }
         return $stmt;
         //TODO: turn this on someday and see if caching statements helps in the real world

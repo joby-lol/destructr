@@ -1,5 +1,5 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr;
 
 use Flatrr\FlatArrayInterface;
@@ -11,8 +11,8 @@ use Flatrr\FlatArrayInterface;
  */
 interface DSOInterface extends FlatArrayInterface
 {
-    public function __construct(array $data = null, DSOFactoryInterface &$factory = null);
-    public function factory(DSOFactoryInterface &$factory = null) : ?DSOFactoryInterface;
+    public function __construct(array $data = null, DSOFactoryInterface $factory = null);
+    public function factory(DSOFactoryInterface $factory = null) : ?DSOFactoryInterface;
 
     public function set(string $name = null, $value, $force=false);
 

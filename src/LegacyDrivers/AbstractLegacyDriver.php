@@ -1,5 +1,5 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr\LegacyDrivers;
 
 use Destructr\Drivers\AbstractDriver;

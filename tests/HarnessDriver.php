@@ -1,5 +1,5 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr;
 
 class HarnessDriver implements Drivers\DSODriverInterface
@@ -14,7 +14,7 @@ class HarnessDriver implements Drivers\DSODriverInterface
     {
     }
 
-    public function &pdo(\PDO &$pdo=null) : ?\PDO {
+    public function pdo(\PDO $pdo=null) : ?\PDO {
         return null;
     }
 

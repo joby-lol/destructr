@@ -1,9 +1,8 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
-declare(strict_types=1);
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
+declare (strict_types = 1);
 namespace Destructr\Drivers\MySQL;
 
-use PHPUnit\Framework\TestCase;
 use Destructr\Drivers\AbstractDriverTest;
 use Destructr\Drivers\MySQLDriver;
 

@@ -1,5 +1,5 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
 declare(strict_types=1);
 namespace Destructr\LegacyDrivers\SQLite;
 

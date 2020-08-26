@@ -1,12 +1,12 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
-declare(strict_types=1);
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
+declare (strict_types = 1);
 namespace Destructr\Drivers;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\DbUnit\TestCaseTrait;
 use Destructr\DSO;
 use Destructr\Search;
+use PHPUnit\DbUnit\TestCaseTrait;
+use PHPUnit\Framework\TestCase;
 
 /**
  * This class tests a factory in isolation. In the name of simplicity it's a bit
@@ -25,21 +25,21 @@ abstract class AbstractDriverTest extends TestCase
      */
     protected $virtualColumns = [
         'dso.id' => [
-            'name'=>'dso_id',
-            'type'=>'VARCHAR(16)',
+            'name' => 'dso_id',
+            'type' => 'VARCHAR(16)',
             'index' => 'BTREE',
-            'unique' => true
+            'unique' => true,
         ],
         'dso.type' => [
-            'name'=>'dso_type',
-            'type'=>'VARCHAR(30)',
-            'index'=>'BTREE'
+            'name' => 'dso_type',
+            'type' => 'VARCHAR(30)',
+            'index' => 'BTREE',
         ],
         'dso.deleted' => [
-            'name'=>'dso_deleted',
-            'type'=>'BIGINT',
-            'index'=>'BTREE'
-        ]
+            'name' => 'dso_deleted',
+            'type' => 'BIGINT',
+            'index' => 'BTREE',
+        ],
     ];
 
     public function testCreateTable()
@@ -56,15 +56,15 @@ abstract class AbstractDriverTest extends TestCase
         $driver = $this->createDriver();
         $driver->createTable('testInsert', $this->virtualColumns);
         //test inserting an object
-        $o = new DSO(['dso.id'=>'first-inserted']);
+        $o = new DSO(['dso.id' => 'first-inserted']);
         $this->assertTrue($driver->insert('testInsert', $o));
         $this->assertEquals(1, $this->getConnection()->getRowCount('testInsert'));
         //test inserting a second object
-        $o = new DSO(['dso.id'=>'second-inserted']);
+        $o = new DSO(['dso.id' => 'second-inserted']);
         $this->assertTrue($driver->insert('testInsert', $o));
         $this->assertEquals(2, $this->getConnection()->getRowCount('testInsert'));
         //test inserting a second object with an existing id, it shouldn't work
-        $o = new DSO(['dso.id'=>'first-inserted']);
+        $o = new DSO(['dso.id' => 'first-inserted']);
         $this->assertFalse($driver->insert('testInsert', $o));
         $this->assertEquals(2, $this->getConnection()->getRowCount('testInsert'));
     }
@@ -97,12 +97,12 @@ abstract class AbstractDriverTest extends TestCase
         // search with no results, searching by virtual column
         $search = new Search();
         $search->where('`dso_type` = :param');
-        $results = $driver->select('testSelect', $search, [':param'=>'type-none']);
+        $results = $driver->select('testSelect', $search, [':param' => 'type-none']);
         $this->assertSame(0, count($results));
         // search with no results, searching by json field
         $search = new Search();
         $search->where('${foo} = :param');
-        $results = $driver->select('testSelect', $search, [':param'=>'nonexistent foo value']);
+        $results = $driver->select('testSelect', $search, [':param' => 'nonexistent foo value']);
         $this->assertSame(0, count($results));
     }
 
@@ -113,11 +113,11 @@ abstract class AbstractDriverTest extends TestCase
         //set up dummy data
         $this->setup_testDelete();
         //try deleting an item
-        $dso = new DSO(['dso.id'=>'item-a-1']);
+        $dso = new DSO(['dso.id' => 'item-a-1']);
         $driver->delete('testDelete', $dso);
         $this->assertEquals(3, $this->getConnection()->getRowCount('testDelete'));
         //try deleting an item at the other end of the table
-        $dso = new DSO(['dso.id'=>'item-b-2']);
+        $dso = new DSO(['dso.id' => 'item-b-2']);
         $driver->delete('testDelete', $dso);
         $this->assertEquals(2, $this->getConnection()->getRowCount('testDelete'));
     }
@@ -126,24 +126,24 @@ abstract class AbstractDriverTest extends TestCase
     {
         $driver = $this->createDriver();
         $driver->insert('testDelete', new DSO([
-            'dso'=>['id'=>'item-a-1','type'=>'type-a'],
-            'foo'=>'bar',
-            'sort'=>'a'
+            'dso' => ['id' => 'item-a-1', 'type' => 'type-a'],
+            'foo' => 'bar',
+            'sort' => 'a',
         ]));
         $driver->insert('testDelete', new DSO([
-            'dso'=>['id'=>'item-a-2','type'=>'type-a'],
-            'foo'=>'baz',
-            'sort'=>'c'
+            'dso' => ['id' => 'item-a-2', 'type' => 'type-a'],
+            'foo' => 'baz',
+            'sort' => 'c',
         ]));
         $driver->insert('testDelete', new DSO([
-            'dso'=>['id'=>'item-b-1','type'=>'type-b'],
-            'foo'=>'buz',
-            'sort'=>'b'
+            'dso' => ['id' => 'item-b-1', 'type' => 'type-b'],
+            'foo' => 'buz',
+            'sort' => 'b',
         ]));
         $driver->insert('testDelete', new DSO([
-            'dso'=>['id'=>'item-b-2','type'=>'type-b','deleted'=>100],
-            'foo'=>'quz',
-            'sort'=>'d'
+            'dso' => ['id' => 'item-b-2', 'type' => 'type-b', 'deleted' => 100],
+            'foo' => 'quz',
+            'sort' => 'd',
         ]));
     }
 
@@ -151,24 +151,24 @@ abstract class AbstractDriverTest extends TestCase
     {
         $driver = $this->createDriver();
         $driver->insert('testSelect', new DSO([
-            'dso'=>['id'=>'item-a-1','type'=>'type-a'],
-            'foo'=>'bar',
-            'sort'=>'a'
+            'dso' => ['id' => 'item-a-1', 'type' => 'type-a'],
+            'foo' => 'bar',
+            'sort' => 'a',
         ]));
         $driver->insert('testSelect', new DSO([
-            'dso'=>['id'=>'item-a-2','type'=>'type-a'],
-            'foo'=>'baz',
-            'sort'=>'c'
+            'dso' => ['id' => 'item-a-2', 'type' => 'type-a'],
+            'foo' => 'baz',
+            'sort' => 'c',
         ]));
         $driver->insert('testSelect', new DSO([
-            'dso'=>['id'=>'item-b-1','type'=>'type-b'],
-            'foo'=>'buz',
-            'sort'=>'b'
+            'dso' => ['id' => 'item-b-1', 'type' => 'type-b'],
+            'foo' => 'buz',
+            'sort' => 'b',
         ]));
         $driver->insert('testSelect', new DSO([
-            'dso'=>['id'=>'item-b-2','type'=>'type-b','deleted'=>100],
-            'foo'=>'quz',
-            'sort'=>'d'
+            'dso' => ['id' => 'item-b-2', 'type' => 'type-b', 'deleted' => 100],
+            'foo' => 'quz',
+            'sort' => 'd',
         ]));
     }
 

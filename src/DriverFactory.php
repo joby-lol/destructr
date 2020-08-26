@@ -1,15 +1,16 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr;
 
 class DriverFactory
 {
     public static $map = [
+        'mariadb' => Drivers\MariaDBDriver::class,
         'mysql' => Drivers\MySQLDriver::class,
-        'sqlite' => LegacyDrivers\SQLiteDriver::class
+        'sqlite' => LegacyDrivers\SQLiteDriver::class,
     ];
 
-    public static function factory(string $dsn, string $username=null, string $password=null, array $options=null, string $type = null) : ?Drivers\DSODriverInterface
+    public static function factory(string $dsn, string $username = null, string $password = null, array $options = null, string $type = null): ?Drivers\DSODriverInterface
     {
         if (!$type) {
             $type = @array_shift(explode(':', $dsn, 2));
@@ -22,7 +23,7 @@ class DriverFactory
         }
     }
 
-    public static function factoryFromPDO(\PDO &$pdo, string $type = null) : ?Drivers\DSODriverInterface
+    public static function factoryFromPDO(\PDO $pdo, string $type = null): ?Drivers\DSODriverInterface
     {
         if (!$type) {
             $type = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);

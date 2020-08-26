@@ -1,5 +1,5 @@
 <?php
-/* Destructr | https://gitlab.com/byjoby/destructr | MIT License */
+/* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr\LegacyDrivers;
 
 use Destructr\DSOInterface;
@@ -16,7 +16,7 @@ use Destructr\Factory;
  */
 class SQLiteDriver extends AbstractLegacyDriver
 {
-    public function &pdo(\PDO &$pdo=null) : ?\PDO
+    public function pdo(\PDO $pdo=null) : ?\PDO
     {
         if ($pdo) {
             $this->pdo = $pdo;
@@ -73,7 +73,7 @@ class SQLiteDriver extends AbstractLegacyDriver
     protected function sql_ddl($args=array())
     {
         $out = [];
-        $out[] = "CREATE TABLE `{$args['table']}` (";
+        $out[] = "CREATE TABLE IF NOT EXISTS `{$args['table']}` (";
         $lines = [];
         $lines[] = "`json_data` TEXT DEFAULT NULL";
         foreach (Factory::CORE_VIRTUAL_COLUMNS as $path => $col) {

@@ -3,9 +3,9 @@
 namespace Destructr\Drivers;
 
 /**
- * What this driver supports: MySQL >= 5.7
+ * What this driver supports: MariaDB >= 10.2
  */
-class MySQLDriver extends AbstractDriver
+class MariaDBDriver extends AbstractDriver
 {
     /**
      * Within the search we expand strings like ${dso.id} into JSON queries.
@@ -74,7 +74,7 @@ class MySQLDriver extends AbstractDriver
         }
         foreach ($args['virtualColumns'] as $path => $col) {
             if (@$col['primary']) {
-                $lines[] = "PRIMARY KEY (`{$col['name']}`)";
+                $lines[] = "UNIQUE KEY (`{$col['name']}`)";
             } elseif (@$col['unique'] && $as = @$col['index']) {
                 $lines[] = "UNIQUE KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
             } elseif ($as = @$col['index']) {

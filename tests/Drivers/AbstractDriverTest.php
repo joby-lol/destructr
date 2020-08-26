@@ -48,7 +48,6 @@ abstract class AbstractDriverTest extends TestCase
         $res = $driver->createTable('testCreateTable', $this->virtualColumns);
         $this->assertTrue($res);
         $this->assertEquals(0, $this->getConnection()->getRowCount('testCreateTable'));
-        $this->assertFalse($driver->createTable('testCreateTable', $this->virtualColumns));
     }
 
     public function testInsert()

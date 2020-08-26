@@ -6,7 +6,6 @@ use Destructr\DSOInterface;
 use Destructr\Search;
 use PDO;
 
-//TODO: Caching? It should happen somewhere in this class I think.
 abstract class AbstractDriver implements DSODriverInterface
 {
     public $lastPreparationErrorOn;
@@ -134,12 +133,5 @@ abstract class AbstractDriver implements DSODriverInterface
             throw new \Exception("Error preparing statement: " . implode(': ', $this->pdo->errorInfo()), 1);
         }
         return $stmt;
-        //TODO: turn this on someday and see if caching statements helps in the real world
-        // $sql = $this->$fn($args);
-        // $id = md5($sql);
-        // if (!isset($this->prepared[$id])) {
-        //     $this->prepared[$id] = $this->pdo->prepare($sql);
-        // }
-        // return @$this->prepared[$id];
     }
 }

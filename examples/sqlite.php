@@ -2,15 +2,12 @@
 include __DIR__ . '/../vendor/autoload.php';
 
 /*
-Constructing MariaDB drivers should be done using factoryFromPDO,
-so that they use the MariaDB driver instead of the MySQL driver.
+SQLite drivers can be created by the default factory.
+A charset of UTF8 should be specified, to avoid character encoding
+issues.
 */
-$driver = \Destructr\DriverFactory::factoryFromPDO(
-    new \PDO(
-        'mysql:server=localhost;port=3307;dbname=destructr',
-        'root'
-    ),
-    'mariadb'
+$driver = \Destructr\DriverFactory::factory(
+    'sqlite:'.__DIR__.'/example.sqlite'
 );
 
 /*
@@ -25,6 +22,7 @@ $factory->createTable();
 The following can be uncommented to insert 1,000 dummy records
 into the given table.
 */
+// ini_set('max_execution_time','0');
 // for($i = 0; $i < 1000; $i++) {
 //     $obj = $factory->create(
 //         [

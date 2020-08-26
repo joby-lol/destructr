@@ -74,8 +74,8 @@ Exact requirements are in flux during development, but basically if a database d
 
 In practice this means Destructr will **never** be able to run on less than the following versions of the following popular databases:
 
-* MySQL >=5.7
-* MariaDB >=10.2
+* MySQL >=5.7.8
+* MariaDB >=10.2.7
 * PostgreSQL >=9.3
 * SQL Server >=2016
 

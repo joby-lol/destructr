@@ -5,3 +5,5 @@ test.php
 test.sqlite
 *.test.sqlite
 .DS_Store
+examples/example.sqlite
+examples/example.sqlite-journal

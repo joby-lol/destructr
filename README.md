@@ -72,6 +72,12 @@ This system relies **heavily** on the JSON features of the underlying database.
 This means it cannot possibly run without a database that supports JSON features.
 Exact requirements are in flux during development, but basically if a database doesn't have JSON functions it's probably impossible for Destructr to ever work with it.
 
+At the moment there is pretty decent support for:
+
+* MySQL >=5.7.8
+* MariaDB >=10.2.7
+* SQLite 3 (with some caveats)
+
 In practice this means Destructr will **never** be able to run on less than the following versions of the following popular databases:
 
 * MySQL >=5.7.8
@@ -87,3 +93,10 @@ For more information see [the legacy drivers readme](src/LegacyDrivers/README.md
 Theoretically Destructr is also an excellent fit for NoSQL databases.
 If I ever find myself needing it there's a good chance it's possible to write drivers for running it on something like MongoDB as well.
 It might even be kind of easy.
+
+### SQLite caveats
+
+MySQL and MariaDB drivers set virtual columns to be generated automatically using their native JSON functions.
+SQLite doesn't have native JSON (in most environments, at least), so Destructr itself manually updates virtual columns whenever objects are inserted or updated.
+In practice this won't matter *if* you are doing all your insertion and updating via Destructr.
+If you're doing updates to your database via any other method, however, you need to be aware of this, and manually update the virtual column values.

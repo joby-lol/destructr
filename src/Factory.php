@@ -33,44 +33,22 @@ class Factory implements DSOFactoryInterface
      */
     protected $virtualColumns = [
         'dso.id' => [
-            'name'=>'dso_id',
-            'type'=>'VARCHAR(16)',
+            'name' => 'dso_id',
+            'type' => 'VARCHAR(16)',
             'index' => 'BTREE',
             'unique' => true,
-            'primary' => true
+            'primary' => true,
         ],
         'dso.type' => [
-            'name'=>'dso_type',
-            'type'=>'VARCHAR(30)',
-            'index'=>'BTREE'
-        ],
-        'dso.deleted' => [
-            'name'=>'dso_deleted',
-            'type'=>'BIGINT',
-            'index'=>'BTREE'
-        ]
-    ];
-    /**
-     * This cannot be modified by extending classes, it's used by legacy drivers
-     */
-    const CORE_VIRTUAL_COLUMNS = [
-        'dso.id' => [
-            'name'=>'dso_id',
-            'type'=>'VARCHAR(16)',
+            'name' => 'dso_type',
+            'type' => 'VARCHAR(30)',
             'index' => 'BTREE',
-            'unique' => true,
-            'primary' => true
-        ],
-        'dso.type' => [
-            'name'=>'dso_type',
-            'type'=>'VARCHAR(30)',
-            'index'=>'BTREE'
         ],
         'dso.deleted' => [
-            'name'=>'dso_deleted',
-            'type'=>'BIGINT',
-            'index'=>'BTREE'
-        ]
+            'name' => 'dso_deleted',
+            'type' => 'BIGINT',
+            'index' => 'BTREE',
+        ],
     ];
 
     public function __construct(Drivers\DSODriverInterface $driver, string $table)
@@ -79,7 +57,7 @@ class Factory implements DSOFactoryInterface
         $this->table = $table;
     }
 
-    public function quote(string $str) : string
+    public function quote(string $str): string
     {
         return $this->driver->pdo()->quote($str);
     }
@@ -93,14 +71,14 @@ class Factory implements DSOFactoryInterface
             $dso->set('dso.created.date', time());
         }
         if (!$dso->get('dso.created.user')) {
-            $dso->set('dso.created.user', ['ip'=>@$_SERVER['REMOTE_ADDR']]);
+            $dso->set('dso.created.user', ['ip' => @$_SERVER['REMOTE_ADDR']]);
         }
     }
 
     protected function hook_update(DSOInterface $dso)
     {
         $dso->set('dso.modified.date', time());
-        $dso->set('dso.modified.user', ['ip'=>@$_SERVER['REMOTE_ADDR']]);
+        $dso->set('dso.modified.user', ['ip' => @$_SERVER['REMOTE_ADDR']]);
     }
 
     /**
@@ -112,12 +90,12 @@ class Factory implements DSOFactoryInterface
      * @param array $data
      * @return string|null
      */
-    public function class(array $data) : ?string
+    function class (array $data): ?string
     {
         return null;
     }
 
-    public function delete(DSOInterface $dso, bool $permanent = false) : bool
+    public function delete(DSOInterface $dso, bool $permanent = false): bool
     {
         if ($permanent) {
             return $this->driver->delete($this->table, $dso);
@@ -126,13 +104,13 @@ class Factory implements DSOFactoryInterface
         return $this->update($dso, true);
     }
 
-    public function undelete(DSOInterface $dso) : bool
+    public function undelete(DSOInterface $dso): bool
     {
         unset($dso['dso.deleted']);
         return $this->update($dso, true);
     }
 
-    public function create(array $data = array()) : DSOInterface
+    public function create(array $data = array()): DSOInterface
     {
         if (!($class = $this->class($data))) {
             $class = DSO::class;
@@ -144,25 +122,25 @@ class Factory implements DSOFactoryInterface
         return $dso;
     }
 
-    public function createTable() : bool
+    public function createTable(): bool
     {
         return $this->driver->createTable(
             $this->table,
-            ($this->driver::EXTENSIBLE_VIRTUAL_COLUMNS?$this->virtualColumns:$this::CORE_VIRTUAL_COLUMNS)
+            $this->virtualColumns
         );
     }
 
-    protected function virtualColumnName($path) : ?string
+    public function virtualColumns(): array
     {
-        if ($this->driver::EXTENSIBLE_VIRTUAL_COLUMNS) {
-            $vcols = $this->virtualColumns;
-        } else {
-            $vcols = static::CORE_VIRTUAL_COLUMNS;
-        }
-        return @$vcols[$path]['name'];
+        return $this->virtualColumns;
     }
 
-    public function update(DSOInterface $dso, bool $sneaky = false) : bool
+    protected function virtualColumnName($path): ?string
+    {
+        return @$this->virtualColumns[$path]['name'];
+    }
+
+    public function update(DSOInterface $dso, bool $sneaky = false): bool
     {
         if (!$dso->changes() && !$dso->removals()) {
             return true;
@@ -176,7 +154,7 @@ class Factory implements DSOFactoryInterface
         return $out;
     }
 
-    public function search() : Search
+    public function search(): Search
     {
         return new Search($this);
     }
@@ -195,7 +173,7 @@ class Factory implements DSOFactoryInterface
         return $arr;
     }
 
-    public function executeCount(Search $search, array $params = array(), $deleted = false) : ?int
+    public function executeCount(Search $search, array $params = array(), $deleted = false): ?int
     {
         //add deletion clause and expand column names
         $search = $this->preprocessSearch($search, $deleted);
@@ -207,7 +185,7 @@ class Factory implements DSOFactoryInterface
         );
     }
 
-    public function executeSearch(Search $search, array $params = array(), $deleted = false) : array
+    public function executeSearch(Search $search, array $params = array(), $deleted = false): array
     {
         //add deletion clause and expand column names
         $search = $this->preprocessSearch($search, $deleted);
@@ -220,17 +198,17 @@ class Factory implements DSOFactoryInterface
         return $this->makeObjectsFromRows($r);
     }
 
-    public function read(string $value, string $field = 'dso.id', $deleted = false) : ?DSOInterface
+    public function read(string $value, string $field = 'dso.id', $deleted = false): ?DSOInterface
     {
         $search = $this->search();
-        $search->where('${'.$field.'} = :value');
-        if ($results = $search->execute([':value'=>$value], $deleted)) {
+        $search->where('${' . $field . '} = :value');
+        if ($results = $search->execute([':value' => $value], $deleted)) {
             return array_shift($results);
         }
         return null;
     }
 
-    public function insert(DSOInterface $dso) : bool
+    public function insert(DSOInterface $dso): bool
     {
         $this->hook_update($dso);
         $dso->hook_update();
@@ -255,14 +233,14 @@ class Factory implements DSOFactoryInterface
                 $added = '${dso.deleted} is null';
             }
             if ($where) {
-                $where = '('.$where.') AND '.$added;
+                $where = '(' . $where . ') AND ' . $added;
             } else {
                 $where = $added;
             }
             $search->where($where);
         }
         /* expand virtual column names */
-        foreach (['where','order'] as $clause) {
+        foreach (['where', 'order'] as $clause) {
             if ($value = $search->$clause()) {
                 $value = preg_replace_callback(
                     '/\$\{([^\}\\\]+)\}/',
@@ -282,7 +260,7 @@ class Factory implements DSOFactoryInterface
         return $search;
     }
 
-    protected static function generate_id($chars, $length) : string
+    protected static function generate_id($chars, $length): string
     {
         $check = new Check();
         do {
@@ -290,7 +268,7 @@ class Factory implements DSOFactoryInterface
             while (strlen($id) < $length) {
                 $id .= substr(
                     $chars,
-                    rand(0, strlen($chars)-1),
+                    rand(0, strlen($chars) - 1),
                     1
                 );
             }

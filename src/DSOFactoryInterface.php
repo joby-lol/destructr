@@ -7,6 +7,7 @@ interface DSOFactoryInterface
     public function __construct(Drivers\DSODriverInterface $driver, string $table);
 
     public function class(array $data) : ?string;
+    public function virtualColumns(): array;
 
     public function createTable() : bool;
     public function create(array $data = array()) : DSOInterface;

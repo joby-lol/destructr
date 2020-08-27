@@ -37,8 +37,12 @@ into the given table.
 Search by random data field
 */
 $search = $factory->search();
-$search->where('${random_data} = :q');
-$result = $search->execute(['q'=>'rw7nivub9bhhh3t4']);
+$search->where('${random_data} LIKE :q');
+$result = $search->execute(['q'=>'%ab%']);
+foreach($result as $r) {
+    $r['random_data_2'] = md5(rand());
+    $r->update();
+}
 
 /*
 Search by dso.id, which is much faster because it's indexed

@@ -13,7 +13,7 @@ class MySQLDriver extends AbstractDriver
      * column names if there are virtual columns configured for them. That
      * happens in the Factory before it gets here.
      */
-    protected function sql_select($args)
+    protected function sql_select(array $args): string
     {
         //extract query parts from Search and expand paths
         $where = $this->expandPaths($args['search']->where());
@@ -24,25 +24,25 @@ class MySQLDriver extends AbstractDriver
         $out = ["SELECT * FROM `{$args['table']}`"];
         //where statement
         if ($where !== null) {
-            $out[] = "WHERE ".$where;
+            $out[] = "WHERE " . $where;
         }
         //order statement
         if ($order !== null) {
-            $out[] = "ORDER BY ".$order;
+            $out[] = "ORDER BY " . $order;
         }
         //limit
         if ($limit !== null) {
-            $out[] = "LIMIT ".$limit;
+            $out[] = "LIMIT " . $limit;
         }
         //offset
         if ($offset !== null) {
-            $out[] = "OFFSET ".$offset;
+            $out[] = "OFFSET " . $offset;
         }
         //return
-        return implode(PHP_EOL, $out).';';
+        return implode(PHP_EOL, $out) . ';';
     }
 
-    protected function sql_count($args)
+    protected function sql_count(array $args): string
     {
         //extract query parts from Search and expand paths
         $where = $this->expandPaths($args['search']->where());
@@ -50,20 +50,20 @@ class MySQLDriver extends AbstractDriver
         $out = ["SELECT count(dso_id) FROM `{$args['table']}`"];
         //where statement
         if ($where !== null) {
-            $out[] = "WHERE ".$where;
+            $out[] = "WHERE " . $where;
         }
         //return
-        return implode(PHP_EOL, $out).';';
+        return implode(PHP_EOL, $out) . ';';
     }
 
-    protected function sql_ddl($args=array())
+    protected function sql_ddl(array $args = []): string
     {
         $out = [];
         $out[] = "CREATE TABLE IF NOT EXISTS `{$args['table']}` (";
         $lines = [];
         $lines[] = "`json_data` JSON DEFAULT NULL";
         foreach ($args['virtualColumns'] as $path => $col) {
-            $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (".$this->expandPath($path).")";
+            $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
             if (@$col['primary']) {
                 $line .= ' STORED';
             } else {
@@ -80,28 +80,28 @@ class MySQLDriver extends AbstractDriver
                 $lines[] = "KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
             }
         }
-        $out[] = implode(','.PHP_EOL, $lines);
+        $out[] = implode(',' . PHP_EOL, $lines);
         $out[] = ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
         return implode(PHP_EOL, $out);
     }
 
-    protected function expandPath(string $path) : string
+    protected function expandPath(string $path): string
     {
         return "JSON_UNQUOTE(JSON_EXTRACT(`json_data`,'$.{$path}'))";
     }
 
-    protected function sql_setJSON($args)
+    protected function sql_setJSON(array $args): string
     {
-        return 'UPDATE `'.$args['table'].'` SET `json_data` = :data WHERE `dso_id` = :dso_id;';
+        return 'UPDATE `' . $args['table'] . '` SET `json_data` = :data WHERE `dso_id` = :dso_id;';
     }
 
-    protected function sql_insert($args)
+    protected function sql_insert(array $args): string
     {
         return "INSERT INTO `{$args['table']}` (`json_data`) VALUES (:data);";
     }
 
-    protected function sql_delete($args)
+    protected function sql_delete(array $args): string
     {
-        return 'DELETE FROM `'.$args['table'].'` WHERE `dso_id` = :dso_id;';
+        return 'DELETE FROM `' . $args['table'] . '` WHERE `dso_id` = :dso_id;';
     }
 }

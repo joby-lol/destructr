@@ -4,6 +4,7 @@ declare (strict_types = 1);
 namespace Destructr\Drivers;
 
 use Destructr\DSO;
+use Destructr\Factory;
 use Destructr\Search;
 use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
@@ -54,15 +55,15 @@ abstract class AbstractDriverTest extends TestCase
         $driver = $this->createDriver();
         $driver->createTable('testInsert', $this->virtualColumns);
         //test inserting an object
-        $o = new DSO(['dso.id' => 'first-inserted']);
+        $o = new DSO(['dso.id' => 'first-inserted'],new Factory($driver,'no_table'));
         $this->assertTrue($driver->insert('testInsert', $o));
         $this->assertEquals(1, $this->getConnection()->getRowCount('testInsert'));
         //test inserting a second object
-        $o = new DSO(['dso.id' => 'second-inserted']);
+        $o = new DSO(['dso.id' => 'second-inserted'],new Factory($driver,'no_table'));
         $this->assertTrue($driver->insert('testInsert', $o));
         $this->assertEquals(2, $this->getConnection()->getRowCount('testInsert'));
         //test inserting a second object with an existing id, it shouldn't work
-        $o = new DSO(['dso.id' => 'first-inserted']);
+        $o = new DSO(['dso.id' => 'first-inserted'],new Factory($driver,'no_table'));
         $this->assertFalse($driver->insert('testInsert', $o));
         $this->assertEquals(2, $this->getConnection()->getRowCount('testInsert'));
     }
@@ -111,11 +112,11 @@ abstract class AbstractDriverTest extends TestCase
         //set up dummy data
         $this->setup_testDelete();
         //try deleting an item
-        $dso = new DSO(['dso.id' => 'item-a-1']);
+        $dso = new DSO(['dso.id' => 'item-a-1'],new Factory($driver,'no_table'));
         $driver->delete('testDelete', $dso);
         $this->assertEquals(3, $this->getConnection()->getRowCount('testDelete'));
         //try deleting an item at the other end of the table
-        $dso = new DSO(['dso.id' => 'item-b-2']);
+        $dso = new DSO(['dso.id' => 'item-b-2'],new Factory($driver,'no_table'));
         $driver->delete('testDelete', $dso);
         $this->assertEquals(2, $this->getConnection()->getRowCount('testDelete'));
     }
@@ -127,22 +128,22 @@ abstract class AbstractDriverTest extends TestCase
             'dso' => ['id' => 'item-a-1', 'type' => 'type-a'],
             'foo' => 'bar',
             'sort' => 'a',
-        ]));
+        ],new Factory($driver,'no_table')));
         $driver->insert('testDelete', new DSO([
             'dso' => ['id' => 'item-a-2', 'type' => 'type-a'],
             'foo' => 'baz',
             'sort' => 'c',
-        ]));
+        ],new Factory($driver,'no_table')));
         $driver->insert('testDelete', new DSO([
             'dso' => ['id' => 'item-b-1', 'type' => 'type-b'],
             'foo' => 'buz',
             'sort' => 'b',
-        ]));
+        ],new Factory($driver,'no_table')));
         $driver->insert('testDelete', new DSO([
             'dso' => ['id' => 'item-b-2', 'type' => 'type-b', 'deleted' => 100],
             'foo' => 'quz',
             'sort' => 'd',
-        ]));
+        ],new Factory($driver,'no_table')));
     }
 
     protected function setup_testSelect()
@@ -152,22 +153,22 @@ abstract class AbstractDriverTest extends TestCase
             'dso' => ['id' => 'item-a-1', 'type' => 'type-a'],
             'foo' => 'bar',
             'sort' => 'a',
-        ]));
+        ],new Factory($driver,'no_table')));
         $driver->insert('testSelect', new DSO([
             'dso' => ['id' => 'item-a-2', 'type' => 'type-a'],
             'foo' => 'baz',
             'sort' => 'c',
-        ]));
+        ],new Factory($driver,'no_table')));
         $driver->insert('testSelect', new DSO([
             'dso' => ['id' => 'item-b-1', 'type' => 'type-b'],
             'foo' => 'buz',
             'sort' => 'b',
-        ]));
+        ],new Factory($driver,'no_table')));
         $driver->insert('testSelect', new DSO([
             'dso' => ['id' => 'item-b-2', 'type' => 'type-b', 'deleted' => 100],
             'foo' => 'quz',
             'sort' => 'd',
-        ]));
+        ],new Factory($driver,'no_table')));
     }
 
     /**

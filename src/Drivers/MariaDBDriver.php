@@ -7,14 +7,14 @@ namespace Destructr\Drivers;
  */
 class MariaDBDriver extends MySQLDriver
 {
-    protected function sql_ddl($args=array())
+    protected function sql_ddl(array $args = []): string
     {
         $out = [];
         $out[] = "CREATE TABLE IF NOT EXISTS `{$args['table']}` (";
         $lines = [];
         $lines[] = "`json_data` JSON DEFAULT NULL";
         foreach ($args['virtualColumns'] as $path => $col) {
-            $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (".$this->expandPath($path).")";
+            $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
             if (@$col['primary']) {
                 $line .= ' PERSISTENT';
             } else {
@@ -31,7 +31,7 @@ class MariaDBDriver extends MySQLDriver
                 $lines[] = "KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
             }
         }
-        $out[] = implode(','.PHP_EOL, $lines);
+        $out[] = implode(',' . PHP_EOL, $lines);
         $out[] = ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
         return implode(PHP_EOL, $out);
     }

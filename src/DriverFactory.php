@@ -7,7 +7,7 @@ class DriverFactory
     public static $map = [
         'mariadb' => Drivers\MariaDBDriver::class,
         'mysql' => Drivers\MySQLDriver::class,
-        'sqlite' => LegacyDrivers\SQLiteDriver::class,
+        'sqlite' => Drivers\SQLiteDriver::class,
     ];
 
     public static function factory(string $dsn, string $username = null, string $password = null, array $options = null, string $type = null): ?Drivers\DSODriverInterface

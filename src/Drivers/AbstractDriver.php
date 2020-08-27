@@ -10,7 +10,14 @@ abstract class AbstractDriver implements DSODriverInterface
 {
     public $lastPreparationErrorOn;
     public $pdo;
-    const EXTENSIBLE_VIRTUAL_COLUMNS = true;
+
+    abstract protected function sql_select(array $args): string;
+    abstract protected function sql_count(array $args): string;
+    abstract protected function sql_ddl(array $args = []): string;
+    abstract protected function expandPath(string $path): string;
+    abstract protected function sql_setJSON(array $args): string;
+    abstract protected function sql_insert(array $args): string;
+    abstract protected function sql_delete(array $args): string;
 
     public function __construct(string $dsn = null, string $username = null, string $password = null, array $options = null)
     {

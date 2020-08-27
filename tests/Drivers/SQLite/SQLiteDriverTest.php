@@ -1,22 +1,16 @@
 <?php
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
-declare(strict_types=1);
-namespace Destructr\LegacyDrivers\SQLite;
+declare (strict_types = 1);
+namespace Destructr\Drivers\SQLite;
 
-use PHPUnit\Framework\TestCase;
 use Destructr\Drivers\AbstractDriverTest;
-use Destructr\LegacyDrivers\SQLiteDriver;
+use Destructr\Drivers\SQLiteDriver;
 
 class SQLiteDriverTest extends AbstractDriverTest
 {
     const DRIVER_CLASS = SQLiteDriver::class;
     const DRIVER_DSN = 'sqlite:'.__DIR__.'/driver.test.sqlite';
-    const DRIVER_USERNAME = null;
-    const DRIVER_PASSWORD = null;
+    const DRIVER_USERNAME = 'root';
+    const DRIVER_PASSWORD = '';
     const DRIVER_OPTIONS = null;
-
-    public static function setUpBeforeClass()
-    {
-        @unlink(__DIR__.'/driver.test.sqlite');
-    }
 }

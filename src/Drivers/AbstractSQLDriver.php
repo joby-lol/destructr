@@ -33,7 +33,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
     public function tableExists(string $table): bool
     {
         $stmt = $this->pdo()->prepare($this->sql_table_exists($table));
-        if ($stmt && $stmt->execute()) {
+        if ($stmt && $stmt->execute() !== false) {
             return true;
         } else {
             return false;
@@ -42,14 +42,14 @@ abstract class AbstractSQLDriver extends AbstractDriver
 
     protected function sql_table_exists(string $table): string
     {
-        $table = $this->pdo()->quote($table);
+        // $table = $this->pdo()->quote($table);
         return 'SELECT 1 FROM ' . $table . ' LIMIT 1';
     }
 
     public function createSchemaTable()
     {
-        $sql = $this->sql_create_schema_table();
-        return $this->pdo->exec($sql) !== false;
+        $this->pdo->exec($this->sql_create_schema_table());
+        return $this->tableExists('destructr_schema');
     }
 
     public function pdo(\PDO $pdo = null): ?\PDO
@@ -153,7 +153,8 @@ abstract class AbstractSQLDriver extends AbstractDriver
             'table' => $table,
             'schema' => $schema,
         ]);
-        return $this->pdo->exec($sql) !== false;
+        $out = $this->pdo->exec($sql) !== false;
+        return $out;
     }
 
     public function getSchema(string $table): ?array

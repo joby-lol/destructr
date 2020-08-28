@@ -18,14 +18,16 @@ Creates a factory using the table 'example_table', and creates
 the necessary table. Note that prepareEnvironment() can safely be called
 multiple times.
 */
-$factory = new \Destructr\Factory($driver, 'example_table');
+include __DIR__ . '/example_factory.php';
+$factory = new ExampleFactory($driver, 'example_table');
 $factory->prepareEnvironment();
+$factory->updateEnvironment();
 
 /*
-The following can be uncommented to insert 1,000 dummy records
+The following can be uncommented to insert dummy records
 into the given table.
 */
-// for($i = 0; $i < 1000; $i++) {
+// for($i = 0; $i < 10; $i++) {
 //     $obj = $factory->create(
 //         [
 //             'dso.type'=>'foobar',

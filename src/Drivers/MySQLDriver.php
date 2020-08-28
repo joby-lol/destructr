@@ -33,7 +33,8 @@ class MySQLDriver extends AbstractSQLDriver
         }
         $out[] = implode(',' . PHP_EOL, $lines);
         $out[] = ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-        return implode(PHP_EOL, $out);
+        $out = implode(PHP_EOL, $out);
+        return $out;
     }
 
     protected function expandPath(string $path): string

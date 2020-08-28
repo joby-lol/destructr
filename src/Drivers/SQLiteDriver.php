@@ -101,7 +101,7 @@ class SQLiteDriver extends AbstractSQLDriver
     protected function dso_columns(DSOInterface $dso)
     {
         $columns = [':json_data' => json_encode($dso->get())];
-        foreach ($this->getSchema($dso->factory()->table()) as $vk => $vv) {
+        foreach ($this->getSchema($dso->factory()->table()) ?? [] as $vk => $vv) {
             $columns[':' . $vv['name']] = $dso->get($vk);
         }
         return $columns;

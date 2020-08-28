@@ -13,4 +13,9 @@ class SQLiteDriverTest extends AbstractSQLDriverTest
     const DRIVER_USERNAME = 'root';
     const DRIVER_PASSWORD = '';
     const DRIVER_OPTIONS = null;
+
+    public static function setUpBeforeClass()
+    {
+        unlink(__DIR__.'/driver.test.sqlite');
+    }
 }

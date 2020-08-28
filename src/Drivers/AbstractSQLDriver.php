@@ -16,9 +16,9 @@ abstract class AbstractSQLDriver extends AbstractDriver
     abstract protected function expandPath(string $path): string;
     abstract protected function sql_set_json(array $args): string;
     abstract protected function sql_insert(array $args): string;
-    abstract protected function updateColumns($table,$schema):bool;
-    abstract protected function addColumns($table,$schema):bool;
-    abstract protected function removeColumns($table,$schema):bool;
+    abstract protected function updateColumns($table, $schema): bool;
+    abstract protected function addColumns($table, $schema): bool;
+    abstract protected function removeColumns($table, $schema): bool;
 
     public function __construct(string $dsn = null, string $username = null, string $password = null, array $options = null)
     {
@@ -92,7 +92,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
         return $this->updateTable($table, $schema);
     }
 
-    protected function updateTable($table,$schema): bool
+    protected function updateTable($table, $schema): bool
     {
         $current = $this->getSchema($table);
         $new = $schema;
@@ -103,7 +103,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
         $added = [];
         $removed = [];
         //remove all unchanged columns from current and new
-        foreach($current as $c_id => $c) {
+        foreach ($current as $c_id => $c) {
             foreach ($schema as $n_id => $n) {
                 if ($n == $c && $n_id == $c_id) {
                     unset($current[$c_id]);
@@ -112,7 +112,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
             }
         }
         //identify updated columns
-        foreach($current as $c_id => $c) {
+        foreach ($current as $c_id => $c) {
             foreach ($schema as $n_id => $n) {
                 if ($n['name'] == $c['name'] && ($n != $c || $n_id != $c_id)) {
                     $updated[$n_id] = $n;
@@ -122,7 +122,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
             }
         }
         //identify removed columns
-        foreach($current as $c_id => $c) {
+        foreach ($current as $c_id => $c) {
             $found = false;
             foreach ($schema as $n_id => $n) {
                 if ($n['name'] == $c['name']) {
@@ -136,10 +136,10 @@ abstract class AbstractSQLDriver extends AbstractDriver
         //identify added columns
         $added = $new;
         //apply changes
-        return $this->updateColumns($table,$updated)
-        && $this->addColumns($table,$added)
-        && $this->removeColumns($table,$removed)
-        && $this->saveSchema($table,$schema);
+        return $this->updateColumns($table, $updated)
+        && $this->addColumns($table, $added)
+        && $this->removeColumns($table, $removed)
+        && $this->saveSchema($table, $schema);
     }
 
     public function createTable(string $table, array $schema): bool
@@ -165,8 +165,12 @@ abstract class AbstractSQLDriver extends AbstractDriver
             );
             if (!$s->execute(['table' => $table])) {
                 $this->schemas[$table] = null;
-            }else {
-                $this->schemas[$table] = json_decode($s->fetch(\PDO::FETCH_ASSOC)['schema_schema'],true);
+            } else {
+                if ($row = $s->fetch(\PDO::FETCH_ASSOC)) {
+                    $this->schemas[$table] = @json_decode($row['schema_schema'], true);
+                } else {
+                    $this->schemas[$table] = null;
+                }
             }
         }
         return @$this->schemas[$table];

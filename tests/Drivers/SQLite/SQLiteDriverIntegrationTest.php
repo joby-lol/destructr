@@ -14,4 +14,9 @@ class SQLiteDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
     const DRIVER_PASSWORD = '';
     const DRIVER_OPTIONS = null;
     const TEST_TABLE = 'integrationtest';
+
+    public static function setUpBeforeClass()
+    {
+        unlink(__DIR__.'/integration.test.sqlite');
+    }
 }

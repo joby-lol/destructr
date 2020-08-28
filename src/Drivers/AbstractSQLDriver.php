@@ -327,13 +327,4 @@ EOT;
         return 'DELETE FROM `' . $args['table'] . '` WHERE `dso_id` = :dso_id;';
     }
 
-    protected function sql_create_schema_table(): string
-    {
-        return <<<EOT
-CREATE TABLE IF NOT EXISTS `destructr_schema`(
-    schema_table VARCHAR(100) PRIMARY KEY NOT NULL,
-    schema_schema TEXT NOT NULL
-);
-EOT;
-    }
 }

@@ -69,4 +69,15 @@ class MySQLDriver extends AbstractSQLDriver
         //TODO: finish this
         return false;
     }
+
+    protected function sql_create_schema_table(): string
+    {
+        return <<<EOT
+CREATE TABLE `destructr_schema` (
+    `schema_table` varchar(100) NOT NULL,
+    `schema_schema` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`schema_schema`)),
+    PRIMARY KEY (`schema_table`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+EOT;
+    }
 }

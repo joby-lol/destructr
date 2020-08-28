@@ -214,4 +214,14 @@ class SQLiteDriver extends AbstractSQLDriver
         //TODO: finish this
         return false;
     }
+
+    protected function sql_create_schema_table(): string
+    {
+        return <<<EOT
+CREATE TABLE IF NOT EXISTS `destructr_schema`(
+    schema_table VARCHAR(100) PRIMARY KEY NOT NULL,
+    schema_schema TEXT NOT NULL
+);
+EOT;
+    }
 }

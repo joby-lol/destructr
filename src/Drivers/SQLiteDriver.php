@@ -224,4 +224,10 @@ CREATE TABLE IF NOT EXISTS `destructr_schema`(
 );
 EOT;
     }
+
+    protected function sql_table_exists(string $table): string
+    {
+        $table = preg_replace('/[^a-zA-Z0-9\-_]/', '', $table);
+        return 'SELECT 1 FROM ' . $table . ' LIMIT 1';
+    }
 }

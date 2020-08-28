@@ -16,9 +16,11 @@ abstract class AbstractSQLDriver extends AbstractDriver
     abstract protected function expandPath(string $path): string;
     abstract protected function sql_set_json(array $args): string;
     abstract protected function sql_insert(array $args): string;
+    abstract protected function sql_create_schema_table(): string;
     abstract protected function updateColumns($table, $schema): bool;
     abstract protected function addColumns($table, $schema): bool;
     abstract protected function removeColumns($table, $schema): bool;
+    abstract protected function sql_table_exists(string $table): string;
 
     public function __construct(string $dsn = null, string $username = null, string $password = null, array $options = null)
     {
@@ -38,12 +40,6 @@ abstract class AbstractSQLDriver extends AbstractDriver
         } else {
             return false;
         }
-    }
-
-    protected function sql_table_exists(string $table): string
-    {
-        // $table = $this->pdo()->quote($table);
-        return 'SELECT 1 FROM ' . $table . ' LIMIT 1';
     }
 
     public function createSchemaTable()

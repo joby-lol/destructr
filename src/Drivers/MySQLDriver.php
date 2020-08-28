@@ -81,4 +81,10 @@ CREATE TABLE `destructr_schema` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 EOT;
     }
+
+    protected function sql_table_exists(string $table): string
+    {
+        $table = preg_replace('/[^a-zA-Z0-9\-_]/', '', $table);
+        return 'SELECT 1 FROM ' . $table . ' LIMIT 1';
+    }
 }

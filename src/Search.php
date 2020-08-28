@@ -3,7 +3,6 @@
 namespace Destructr;
 
 use Destructr\DSOFactoryInterface;
-use Destructr\Drivers\DSODriverInterface;
 
 class Search implements \Serializable
 {
@@ -13,12 +12,12 @@ class Search implements \Serializable
     protected $limit;
     protected $offset;
 
-    public function __construct(DSOFactoryInterface $factory=null)
+    public function __construct(DSOFactoryInterface $factory = null)
     {
         $this->factory = $factory;
     }
 
-    public function quote(string $str) : string
+    public function quote(string $str): string
     {
         return $this->factory->quote($str);
     }
@@ -33,7 +32,7 @@ class Search implements \Serializable
         return $this->factory->executeSearch($this, $params, $deleted);
     }
 
-    public function where(string $set = null) : ?string
+    public function where(string $set = null): ?string
     {
         if ($set !== null) {
             $this->where = $set;
@@ -41,7 +40,18 @@ class Search implements \Serializable
         return $this->where;
     }
 
-    public function order(string $set = null) : ?string
+    public function paginate(int $perPage, int $page = 1)
+    {
+        $this->limit($perPage);
+        $this->offset(($page - 1) * $perPage);
+    }
+
+    public function pageCount(int $perPage)
+    {
+        return ceil($this->count() / $perPage);
+    }
+
+    public function order(string $set = null): ?string
     {
         if ($set !== null) {
             $this->order = $set;
@@ -49,7 +59,7 @@ class Search implements \Serializable
         return $this->order;
     }
 
-    public function limit(int $set = null) : ?int
+    public function limit(int $set = null): ?int
     {
         if ($set !== null) {
             $this->limit = $set;
@@ -57,7 +67,7 @@ class Search implements \Serializable
         return $this->limit;
     }
 
-    public function offset(int $set = null) : ?int
+    public function offset(int $set = null): ?int
     {
         if ($set !== null) {
             $this->offset = $set;
@@ -68,7 +78,7 @@ class Search implements \Serializable
     public function serialize()
     {
         return json_encode(
-            [$this->where(),$this->order(),$this->limit(),$this->offset()]
+            [$this->where(), $this->order(), $this->limit(), $this->offset()]
         );
     }
 

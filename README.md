@@ -66,11 +66,37 @@ $obj->undelete();
 $obj->delete(true);
 ```
 
+### Searching
+
+Factories provide an interface for creating `Search` objects, which allow you to enter in various SQL clauses in a structured and abstract fashion.
+
+```php
+// get a new search object from the factory
+$search = $factory->search();
+
+// Search::where() takes SQL for the WHERE clause of a query
+// ${path} syntax is used to reference data within objects, and
+// works everywhere in searches
+$search->where('${dso.date.modified} > :time');
+
+// Search::order() takes SQL to go inside an ORDER BY clause
+// in the final query.
+$search->order('${dso.date.modified} desc');
+
+// Search limit/offset methods can be used for pagination
+// there is also a paginate() method for more conveniently
+// paginating results
+$search->paginate(20,1);
+
+// Search::execute() returns an array of the resulting objects
+$results = $search->execute();
+```
+
 ## Requirements
 
 This system relies **heavily** on the JSON features of the underlying database.
 This means it cannot possibly run without a database that supports JSON features.
-Exact requirements are in flux during development, but basically if a database doesn't have JSON functions it's probably impossible for Destructr to ever work with it.
+Basically if a database doesn't have JSON functions it's probably impossible for Destructr to ever work with it.
 
 At the moment there is pretty decent support for:
 
@@ -84,11 +110,6 @@ In practice this means Destructr will **never** be able to run on less than the 
 * MariaDB >=10.2.7
 * PostgreSQL >=9.3
 * SQL Server >=2016
-
-There is also a SQLite driver available that inserts a PHP JSON function.
-It doesn't support generated columns, so its indexing and optimization capabilities are limited.
-Nevertheless, SQLite can be reasonably performant for many smaller/simpler applications.
-For more information see [the legacy drivers readme](src/LegacyDrivers/README.md).
 
 Theoretically Destructr is also an excellent fit for NoSQL databases.
 If I ever find myself needing it there's a good chance it's possible to write drivers for running it on something like MongoDB as well.

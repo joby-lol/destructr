@@ -22,17 +22,9 @@ class MariaDBDriver extends MySQLDriver
             }
             $lines[] = $line;
         }
-        foreach ($args['schema'] as $path => $col) {
-            if (@$col['primary']) {
-                $lines[] = "UNIQUE KEY (`{$col['name']}`)";
-            } elseif (@$col['unique'] && $as = @$col['index']) {
-                $lines[] = "UNIQUE KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
-            } elseif ($as = @$col['index']) {
-                $lines[] = "KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
-            }
-        }
         $out[] = implode(',' . PHP_EOL, $lines);
         $out[] = ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-        return implode(PHP_EOL, $out);
+        $out = implode(PHP_EOL, $out);
+        return $out;
     }
 }

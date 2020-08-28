@@ -17,10 +17,11 @@ abstract class AbstractSQLDriver extends AbstractDriver
     abstract protected function sql_set_json(array $args): string;
     abstract protected function sql_insert(array $args): string;
     abstract protected function sql_create_schema_table(): string;
-    abstract protected function updateColumns($table, $schema): bool;
     abstract protected function addColumns($table, $schema): bool;
     abstract protected function removeColumns($table, $schema): bool;
     abstract protected function sql_table_exists(string $table): string;
+    abstract protected function buildIndexes(string $table, array $schema): bool;
+    abstract protected function rebuildSchema($table, $schema): bool;
 
     public function __construct(string $dsn = null, string $username = null, string $password = null, array $options = null)
     {
@@ -57,6 +58,21 @@ abstract class AbstractSQLDriver extends AbstractDriver
         return $this->pdo;
     }
 
+    public function beginTransaction(): bool
+    {
+        return $this->pdo->beginTransaction();
+    }
+
+    public function commit(): bool
+    {
+        return $this->pdo->commit();
+    }
+
+    public function rollBack(): bool
+    {
+        return $this->pdo->rollBack();
+    }
+
     protected function expandPaths($value)
     {
         if ($value === null) {
@@ -79,26 +95,36 @@ abstract class AbstractSQLDriver extends AbstractDriver
 
     public function prepareEnvironment(string $table, array $schema): bool
     {
-        return $this->createSchemaTable()
-        && $this->createTable($table, $schema);
+        $this->beginTransaction();
+        if ($this->createSchemaTable() && $this->createTable($table, $schema)) {
+            $this->commit();
+            return true;
+        } else {
+            $this->rollBack();
+            return false;
+        }
     }
 
     public function updateEnvironment(string $table, array $schema): bool
     {
-        return $this->updateTable($table, $schema);
+        $this->beginTransaction();
+        if ($this->updateTable($table, $schema)) {
+            $this->commit();
+            return true;
+        } else {
+            $this->rollBack();
+            return false;
+        }
     }
 
     protected function updateTable($table, $schema): bool
     {
         $current = $this->getSchema($table);
         $new = $schema;
-        if ($schema == $current) {
+        if (!$current || $schema == $current) {
             return true;
         }
-        $updated = [];
-        $added = [];
-        $removed = [];
-        //remove all unchanged columns from current and new
+        //do nothing with totally unchanged columns
         foreach ($current as $c_id => $c) {
             foreach ($schema as $n_id => $n) {
                 if ($n == $c && $n_id == $c_id) {
@@ -107,35 +133,22 @@ abstract class AbstractSQLDriver extends AbstractDriver
                 }
             }
         }
-        //identify updated columns
-        foreach ($current as $c_id => $c) {
-            foreach ($schema as $n_id => $n) {
-                if ($n['name'] == $c['name'] && ($n != $c || $n_id != $c_id)) {
-                    $updated[$n_id] = $n;
-                    unset($current[$c_id]);
-                    unset($new[$n_id]);
-                }
-            }
-        }
-        //identify removed columns
-        foreach ($current as $c_id => $c) {
-            $found = false;
-            foreach ($schema as $n_id => $n) {
-                if ($n['name'] == $c['name']) {
-                    $found = true;
-                }
-            }
-            if (!$found) {
-                $removed[$c_id] = $c;
-            }
-        }
-        //identify added columns
+        $removed = $current;
         $added = $new;
         //apply changes
-        return $this->updateColumns($table, $updated)
-        && $this->addColumns($table, $added)
-        && $this->removeColumns($table, $removed)
-        && $this->saveSchema($table, $schema);
+        $out = [
+            'removeColumns' => $this->removeColumns($table, $removed),
+            'addColumns' => $this->addColumns($table, $added),
+            'rebuildSchema' => $this->rebuildSchema($table, $schema),
+            'buildIndexes' => $this->buildIndexes($table, $schema),
+            'saveSchema' => $this->saveSchema($table, $schema),
+        ];
+        foreach ($out as $k => $v) {
+            if (!$v) {
+                user_error("An error occurred during updateTable for $table. The error happened during $v.", E_USER_WARNING);
+            }
+        }
+        return !!array_filter($out);
     }
 
     public function createTable(string $table, array $schema): bool
@@ -143,6 +156,8 @@ abstract class AbstractSQLDriver extends AbstractDriver
         // check if table exists, if it doesn't, save into schema table
         if (!$this->tableExists($table)) {
             $this->saveSchema($table, $schema);
+        } else {
+            return true;
         }
         // create table from scratch
         $sql = $this->sql_ddl([
@@ -150,6 +165,9 @@ abstract class AbstractSQLDriver extends AbstractDriver
             'schema' => $schema,
         ]);
         $out = $this->pdo->exec($sql) !== false;
+        if ($out) {
+            $this->buildIndexes($table, $schema);
+        }
         return $out;
     }
 
@@ -175,19 +193,24 @@ abstract class AbstractSQLDriver extends AbstractDriver
 
     public function saveSchema(string $table, array $schema): bool
     {
-        return $this->pdo->exec(
+        $out = $this->pdo->exec(
             $this->sql_save_schema($table, $schema)
         ) !== false;
+        if (!$out) {
+            var_dump($this->errorInfo());
+        }
+        return $out;
     }
 
     protected function sql_save_schema(string $table, array $schema)
     {
+        $time = time();
         $table = $this->pdo->quote($table);
         $schema = $this->pdo->quote(json_encode($schema));
         return <<<EOT
 INSERT INTO `destructr_schema`
-(schema_table,schema_schema)
-VALUES ($table,$schema);
+(schema_time,schema_table,schema_schema)
+VALUES ($time,$table,$schema);
 EOT;
     }
 
@@ -195,7 +218,9 @@ EOT;
     {
         return <<<EOT
 SELECT * FROM `destructr_schema`
-WHERE `schema_table` = :table;
+WHERE `schema_table` = :table
+ORDER BY `schema_time` desc
+LIMIT 1
 EOT;
     }
 

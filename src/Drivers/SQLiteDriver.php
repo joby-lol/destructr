@@ -144,18 +144,8 @@ class SQLiteDriver extends AbstractSQLDriver
         return @"$out";
     }
 
-    public function createTable(string $table, array $schema): bool
+    protected function buildIndexes(string $table, array $schema)
     {
-        // check if table exists, if it doesn't, save into schema table
-        if (!$this->tableExists($table)) {
-            $this->saveSchema($table, $schema);
-        }
-        // create table
-        $sql = $this->sql_ddl([
-            'table' => $table,
-            'schema' => $schema,
-        ]);
-        $out = $this->pdo->exec($sql) !== false;
         foreach ($schema as $key => $vcol) {
             $idxResult = true;
             if (@$vcol['primary']) {
@@ -169,7 +159,11 @@ class SQLiteDriver extends AbstractSQLDriver
                 $out = false;
             }
         }
-        return $out;
+    }
+
+    protected function rebuildSchema($table, $schema)
+    {
+        //TODO: fix all columns to match JSON, this will be SLOW
     }
 
     protected function sql_ddl(array $args = []): string
@@ -194,13 +188,6 @@ class SQLiteDriver extends AbstractSQLDriver
     protected function expandPath(string $path): string
     {
         return "DESTRUCTR_JSON_EXTRACT(`json_data`,'$.{$path}')";
-    }
-
-    protected function updateColumns($table,$schema):bool
-    {
-        //TODO: finish this
-        var_dump($table,$schema);
-        return false;
     }
 
     protected function addColumns($table,$schema):bool

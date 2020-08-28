@@ -22,18 +22,30 @@ class MySQLDriver extends AbstractSQLDriver
             }
             $lines[] = $line;
         }
-        foreach ($args['schema'] as $path => $col) {
-            if (@$col['primary']) {
-                $lines[] = "PRIMARY KEY (`{$col['name']}`)";
-            } elseif (@$col['unique'] && $as = @$col['index']) {
-                $lines[] = "UNIQUE KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
-            } elseif ($as = @$col['index']) {
-                $lines[] = "KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
-            }
-        }
         $out[] = implode(',' . PHP_EOL, $lines);
         $out[] = ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
         $out = implode(PHP_EOL, $out);
+        return $out;
+    }
+
+    protected function buildIndexes(string $table, array $schema):bool
+    {
+        $out = true;
+        foreach ($schema as $path => $col) {
+            if (@$col['primary']) {
+                $out = $out && $this->pdo->exec(
+                    "ALTER TABLE `$table` ADD PRIMARY KEY(`{$col['name']}`)"
+                ) !== false;
+            } elseif (@$col['unique'] && $as = @$col['index']) {
+                $out = $out && $this->pdo->exec(
+                    "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
+                ) !== false;
+            } elseif ($as = @$col['index']) {
+                $out = $out && $this->pdo->exec(
+                    "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
+                ) !== false;
+            }
+        }
         return $out;
     }
 
@@ -52,32 +64,46 @@ class MySQLDriver extends AbstractSQLDriver
         return "INSERT INTO `{$args['table']}` (`json_data`) VALUES (:data);";
     }
 
-    protected function updateColumns($table,$schema):bool
+    protected function addColumns($table, $schema): bool
     {
-        //TODO: finish this
-        var_dump($table,$schema);
-        return false;
+        $out = true;
+        foreach ($schema as $path => $col) {
+            $line = "ALTER TABLE `{$table}` ADD COLUMN `${col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
+            if (@$col['primary']) {
+                $line .= ' STORED;';
+            } else {
+                $line .= ' VIRTUAL;';
+            }
+            $out = $out &&
+            $this->pdo->exec($line) !== false;
+        }
+        return $out;
     }
 
-    protected function addColumns($table,$schema):bool
+    protected function removeColumns($table, $schema): bool
     {
-        //TODO: finish this
-        return false;
+        $out = true;
+        foreach ($schema as $path => $col) {
+            $out = $out &&
+            $this->pdo->exec("ALTER TABLE `{$table}` DROP COLUMN `${col['name']}`;") !== false;
+        }
+        return $out;
     }
 
-    protected function removeColumns($table,$schema):bool
+    protected function rebuildSchema($table, $schema):bool
     {
-        //TODO: finish this
-        return false;
+        //this does nothing in databases that can generate columns themselves
+        return true;
     }
 
     protected function sql_create_schema_table(): string
     {
         return <<<EOT
 CREATE TABLE `destructr_schema` (
+    `schema_time` bigint NOT NULL,
     `schema_table` varchar(100) NOT NULL,
     `schema_schema` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`schema_schema`)),
-    PRIMARY KEY (`schema_table`)
+    PRIMARY KEY (`schema_time`,`schema_table`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 EOT;
     }

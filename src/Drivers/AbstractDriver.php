@@ -15,4 +15,7 @@ abstract class AbstractDriver
     abstract public function select(string $table, Search $search, array $params);
     abstract public function insert(string $table, DSOInterface $dso): bool;
     abstract public function prepareEnvironment(string $table, array $schem): bool;
+    abstract public function beginTransaction(): bool;
+    abstract public function commit(): bool;
+    abstract public function rollBack(): bool;
 }

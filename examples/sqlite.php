@@ -1,4 +1,7 @@
 <?php
+
+use Destructr\Factory;
+
 include __DIR__ . '/../vendor/autoload.php';
 
 /*
@@ -16,12 +19,12 @@ the necessary table. Note that prepareEnvironment() can safely be called
 multiple times.
  */
 include __DIR__ . '/example_factory.php';
-$factory = new ExampleFactory($driver, 'example_table');
+$factory = new Factory($driver, 'example_table');
 $factory->prepareEnvironment();
 $factory->updateEnvironment();
 
 /*
-The following can be uncommented to insert 1,000 dummy records
+The following can be uncommented to insert dummy records
 into the given table.
  */
 // ini_set('max_execution_time','0');

@@ -3,10 +3,10 @@
 declare (strict_types = 1);
 namespace Destructr\Drivers\SQLite;
 
-use Destructr\Drivers\AbstractDriverIntegrationTest;
+use Destructr\Drivers\AbstractSQLDriverIntegrationTest;
 use Destructr\Drivers\SQLiteDriver;
 
-class SQLiteDriverIntegrationTest extends AbstractDriverIntegrationTest
+class SQLiteDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
 {
     const DRIVER_CLASS = SQLiteDriver::class;
     const DRIVER_DSN = 'sqlite:'.__DIR__.'/integration.test.sqlite';

@@ -13,7 +13,7 @@ class MariaDBDriver extends MySQLDriver
         $out[] = "CREATE TABLE IF NOT EXISTS `{$args['table']}` (";
         $lines = [];
         $lines[] = "`json_data` JSON DEFAULT NULL";
-        foreach ($args['virtualColumns'] as $path => $col) {
+        foreach ($args['schema'] as $path => $col) {
             $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
             if (@$col['primary']) {
                 $line .= ' PERSISTENT';
@@ -22,7 +22,7 @@ class MariaDBDriver extends MySQLDriver
             }
             $lines[] = $line;
         }
-        foreach ($args['virtualColumns'] as $path => $col) {
+        foreach ($args['schema'] as $path => $col) {
             if (@$col['primary']) {
                 $lines[] = "UNIQUE KEY (`{$col['name']}`)";
             } elseif (@$col['unique'] && $as = @$col['index']) {

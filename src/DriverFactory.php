@@ -10,7 +10,7 @@ class DriverFactory
         'sqlite' => Drivers\SQLiteDriver::class,
     ];
 
-    public static function factory(string $dsn, string $username = null, string $password = null, array $options = null, string $type = null): ?Drivers\DSODriverInterface
+    public static function factory(string $dsn, string $username = null, string $password = null, array $options = null, string $type = null): ?Drivers\AbstractDriver
     {
         if (!$type) {
             $type = @array_shift(explode(':', $dsn, 2));
@@ -23,7 +23,7 @@ class DriverFactory
         }
     }
 
-    public static function factoryFromPDO(\PDO $pdo, string $type = null): ?Drivers\DSODriverInterface
+    public static function factoryFromPDO(\PDO $pdo, string $type = null): ?Drivers\AbstractDriver
     {
         if (!$type) {
             $type = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);

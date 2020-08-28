@@ -4,30 +4,26 @@ use Destructr\Factory;
 
 class ExampleFactory extends Factory {
     /**
-     * Virtual columns are only supported by modern SQL servers. Most of the
-     * legacy drivers will only use the ones defined in CORE_VIRTUAL_COLUMNS,
-     * but that should be handled automatically.
+     * Example factory with a different schema, to index on random_data, but not
+     * by dso_type.
+     * 
+     * Also uses a different column name for dso.id
      */
-    protected $virtualColumns = [
+    protected $schema = [
         'dso.id' => [
-            'name'=>'dso_id',
+            'name'=>'dso_id_other_name',
             'type'=>'VARCHAR(16)',
             'index' => 'BTREE',
             'unique' => true,
             'primary' => true
         ],
-        'dso.type' => [
-            'name'=>'dso_type',
-            'type'=>'VARCHAR(30)',
-            'index'=>'BTREE'
-        ],
         'dso.deleted' => [
             'name'=>'dso_deleted',
-            'type'=>'BIGINT',
+            'type'=>'INT',
             'index'=>'BTREE'
         ],
-        'example.indexed' => [
-            'name'=>'example_indexed',
+        'random_data' => [
+            'name'=>'random_data',
             'type'=>'VARCHAR(100)',
             'index'=>'BTREE'
         ]

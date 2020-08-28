@@ -5,64 +5,15 @@ namespace Destructr\Drivers;
 /**
  * What this driver supports: MySQL >= 5.7.8
  */
-class MySQLDriver extends AbstractDriver
+class MySQLDriver extends AbstractSQLDriver
 {
-    /**
-     * Within the search we expand strings like ${dso.id} into JSON queries.
-     * Note that the Search will have already had these strings expanded into
-     * column names if there are virtual columns configured for them. That
-     * happens in the Factory before it gets here.
-     */
-    protected function sql_select(array $args): string
-    {
-        //extract query parts from Search and expand paths
-        $where = $this->expandPaths($args['search']->where());
-        $order = $this->expandPaths($args['search']->order());
-        $limit = $args['search']->limit();
-        $offset = $args['search']->offset();
-        //select from
-        $out = ["SELECT * FROM `{$args['table']}`"];
-        //where statement
-        if ($where !== null) {
-            $out[] = "WHERE " . $where;
-        }
-        //order statement
-        if ($order !== null) {
-            $out[] = "ORDER BY " . $order;
-        }
-        //limit
-        if ($limit !== null) {
-            $out[] = "LIMIT " . $limit;
-        }
-        //offset
-        if ($offset !== null) {
-            $out[] = "OFFSET " . $offset;
-        }
-        //return
-        return implode(PHP_EOL, $out) . ';';
-    }
-
-    protected function sql_count(array $args): string
-    {
-        //extract query parts from Search and expand paths
-        $where = $this->expandPaths($args['search']->where());
-        //select from
-        $out = ["SELECT count(dso_id) FROM `{$args['table']}`"];
-        //where statement
-        if ($where !== null) {
-            $out[] = "WHERE " . $where;
-        }
-        //return
-        return implode(PHP_EOL, $out) . ';';
-    }
-
     protected function sql_ddl(array $args = []): string
     {
         $out = [];
         $out[] = "CREATE TABLE IF NOT EXISTS `{$args['table']}` (";
         $lines = [];
         $lines[] = "`json_data` JSON DEFAULT NULL";
-        foreach ($args['virtualColumns'] as $path => $col) {
+        foreach ($args['schema'] as $path => $col) {
             $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
             if (@$col['primary']) {
                 $line .= ' STORED';
@@ -71,7 +22,7 @@ class MySQLDriver extends AbstractDriver
             }
             $lines[] = $line;
         }
-        foreach ($args['virtualColumns'] as $path => $col) {
+        foreach ($args['schema'] as $path => $col) {
             if (@$col['primary']) {
                 $lines[] = "PRIMARY KEY (`{$col['name']}`)";
             } elseif (@$col['unique'] && $as = @$col['index']) {
@@ -90,7 +41,7 @@ class MySQLDriver extends AbstractDriver
         return "JSON_UNQUOTE(JSON_EXTRACT(`json_data`,'$.{$path}'))";
     }
 
-    protected function sql_setJSON(array $args): string
+    protected function sql_set_json(array $args): string
     {
         return 'UPDATE `' . $args['table'] . '` SET `json_data` = :data WHERE `dso_id` = :dso_id;';
     }
@@ -100,8 +51,22 @@ class MySQLDriver extends AbstractDriver
         return "INSERT INTO `{$args['table']}` (`json_data`) VALUES (:data);";
     }
 
-    protected function sql_delete(array $args): string
+    protected function updateColumns($table,$schema):bool
     {
-        return 'DELETE FROM `' . $args['table'] . '` WHERE `dso_id` = :dso_id;';
+        //TODO: finish this
+        var_dump($table,$schema);
+        return false;
+    }
+
+    protected function addColumns($table,$schema):bool
+    {
+        //TODO: finish this
+        return false;
+    }
+
+    protected function removeColumns($table,$schema):bool
+    {
+        //TODO: finish this
+        return false;
     }
 }

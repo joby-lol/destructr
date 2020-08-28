@@ -15,11 +15,11 @@ $driver = \Destructr\DriverFactory::factoryFromPDO(
 
 /*
 Creates a factory using the table 'example_table', and creates
-the necessary table. Note that createTable() can safely be called
+the necessary table. Note that prepareEnvironment() can safely be called
 multiple times.
 */
 $factory = new \Destructr\Factory($driver, 'example_table');
-$factory->createTable();
+$factory->prepareEnvironment();
 
 /*
 The following can be uncommented to insert 1,000 dummy records

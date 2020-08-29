@@ -23,25 +23,24 @@ class MariaDBDriver extends MySQLDriver
         return $out;
     }
 
-    protected function buildIndexes(string $table, array $schema):bool
+    protected function buildIndexes(string $table, array $schema): bool
     {
-        $out = true;
         foreach ($schema as $path => $col) {
             if (@$col['primary']) {
-                $out = $out && $this->pdo->exec(
+                $this->pdo->exec(
                     "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING BTREE"
-                ) !== false;
+                );
             } elseif (@$col['unique'] && $as = @$col['index']) {
-                $out = $out && $this->pdo->exec(
+                $this->pdo->exec(
                     "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
-                ) !== false;
+                );
             } elseif ($as = @$col['index']) {
-                $out = $out && $this->pdo->exec(
+                $this->pdo->exec(
                     "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
-                ) !== false;
+                );
             }
         }
-        return $out;
+        return true;
     }
 
     protected function addColumns($table, $schema): bool

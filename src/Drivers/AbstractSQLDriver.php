@@ -17,10 +17,10 @@ abstract class AbstractSQLDriver extends AbstractDriver
     abstract protected function sql_set_json(array $args): string;
     abstract protected function sql_insert(array $args): string;
     abstract protected function sql_create_schema_table(): string;
-    abstract protected function addColumns($table, $schema): bool;
-    abstract protected function removeColumns($table, $schema): bool;
     abstract protected function sql_table_exists(string $table): string;
     abstract protected function buildIndexes(string $table, array $schema): bool;
+    abstract protected function addColumns($table, $schema): bool;
+    abstract protected function removeColumns($table, $schema): bool;
     abstract protected function rebuildSchema($table, $schema): bool;
 
     public function __construct(string $dsn = null, string $username = null, string $password = null, array $options = null)
@@ -145,7 +145,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
         ];
         foreach ($out as $k => $v) {
             if (!$v) {
-                user_error("An error occurred during updateTable for $table. The error happened during $v.", E_USER_WARNING);
+                user_error("An error occurred during updateTable for $table. The error happened during $k.", E_USER_WARNING);
             }
         }
         return !!array_filter($out);

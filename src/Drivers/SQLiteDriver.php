@@ -45,6 +45,70 @@ class SQLiteDriver extends AbstractSQLDriver
         return $s->execute($columns);
     }
 
+    protected function updateTable($table, $schema): bool
+    {
+        $current = $this->getSchema($table);
+        if (!$current || $schema == $current) {
+            return true;
+        }
+        //create new table
+        $table_tmp = "{$table}_tmp_" . md5(rand());
+        $sql = $this->sql_ddl([
+            'table' => $table_tmp,
+            'schema' => $schema,
+        ]);
+        if ($this->pdo->exec($sql) === false) {
+            return false;
+        }
+        //copy data into it
+        $sql = ["INSERT INTO $table_tmp"];
+        $cols = ["json_data"];
+        $srcs = ["json_data"];
+        foreach ($schema as $path => $col) {
+            $cols[] = $col['name'];
+            $srcs[] = $this->expandPath($path);
+        }
+        $sql[] = '(' . implode(',', $cols) . ')';
+        $sql[] = 'SELECT';
+        $sql[] = implode(',', $srcs);
+        $sql[] = "FROM $table";
+        $sql = implode(PHP_EOL, $sql);
+        if ($this->pdo->exec($sql) === false) {
+            return false;
+        }
+        //remove old table, rename new table to old table
+        if ($this->pdo->exec("DROP TABLE $table") === false) {
+            return false;
+        }
+        if ($this->pdo->exec("ALTER TABLE $table_tmp RENAME TO $table") === false) {
+            return false;
+        }
+        //set up indexes
+        if (!$this->buildIndexes($table, $schema)) {
+            return false;
+        }
+        //return result
+        return true;
+    }
+
+    protected function addColumns($table, $schema): bool
+    {
+        //does nothing
+        return true;
+    }
+
+    protected function removeColumns($table, $schema): bool
+    {
+        //does nothing
+        return true;
+    }
+
+    protected function rebuildSchema($table, $schema): bool
+    {
+        //does nothing
+        return true;
+    }
+
     protected function sql_insert(array $args): string
     {
         $out = [];
@@ -150,18 +214,13 @@ class SQLiteDriver extends AbstractSQLDriver
                 //sqlite automatically creates this index
             } elseif (@$vcol['unique']) {
                 $result = $result &&
-                    $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+                $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
             } elseif (@$vcol['index']) {
                 $idxResult = $result &&
                 $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
             }
         }
         return $result;
-    }
-
-    protected function rebuildSchema($table, $schema): bool
-    {
-        //TODO: fix all columns to match JSON, this will be SLOW
     }
 
     protected function sql_ddl(array $args = []): string
@@ -186,32 +245,6 @@ class SQLiteDriver extends AbstractSQLDriver
     protected function expandPath(string $path): string
     {
         return "DESTRUCTR_JSON_EXTRACT(`json_data`,'$.{$path}')";
-    }
-
-    protected function addColumns($table, $schema): bool
-    {
-        $out = true;
-        foreach ($schema as $path => $col) {
-            $line = "ALTER TABLE `{$table}` ADD COLUMN `${col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
-            if (@$col['primary']) {
-                $line .= ' STORED;';
-            } else {
-                $line .= ' VIRTUAL;';
-            }
-            $out = $out &&
-            $this->pdo->exec($line) !== false;
-        }
-        return $out;
-    }
-
-    protected function removeColumns($table, $schema): bool
-    {
-        $out = true;
-        foreach ($schema as $path => $col) {
-            $out = $out &&
-            $this->pdo->exec("ALTER TABLE `{$table}` DROP COLUMN `${col['name']}`;") !== false;
-        }
-        return $out;
     }
 
     protected function sql_create_schema_table(): string

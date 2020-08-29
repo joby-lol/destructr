@@ -28,25 +28,24 @@ class MySQLDriver extends AbstractSQLDriver
         return $out;
     }
 
-    protected function buildIndexes(string $table, array $schema):bool
+    protected function buildIndexes(string $table, array $schema): bool
     {
-        $out = true;
         foreach ($schema as $path => $col) {
             if (@$col['primary']) {
-                $out = $out && $this->pdo->exec(
-                    "ALTER TABLE `$table` ADD PRIMARY KEY(`{$col['name']}`)"
-                ) !== false;
+                $this->pdo->exec(
+                    "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING BTREE"
+                );
             } elseif (@$col['unique'] && $as = @$col['index']) {
-                $out = $out && $this->pdo->exec(
+                $this->pdo->exec(
                     "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
-                ) !== false;
+                );
             } elseif ($as = @$col['index']) {
-                $out = $out && $this->pdo->exec(
+                $this->pdo->exec(
                     "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
-                ) !== false;
+                );
             }
         }
-        return $out;
+        return true;
     }
 
     protected function expandPath(string $path): string
@@ -90,7 +89,7 @@ class MySQLDriver extends AbstractSQLDriver
         return $out;
     }
 
-    protected function rebuildSchema($table, $schema):bool
+    protected function rebuildSchema($table, $schema): bool
     {
         //this does nothing in databases that can generate columns themselves
         return true;

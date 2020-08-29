@@ -35,17 +35,15 @@ class Factory
     protected $table;
 
     /**
-     * Virtual columns are only supported by modern SQL servers. Most of the
-     * legacy drivers will only use the ones defined in CORE_VIRTUAL_COLUMNS,
-     * but that should be handled automatically.
+     * Virtual columns that should be created for sorting/indexing in the SQL server
      */
     protected $schema = [
         'dso.id' => [
-            'name' => 'dso_id',//column name to be used
-            'type' => 'VARCHAR(16)',//column type
-            'index' => 'BTREE',//whether/how to index
-            'unique' => true,//whether column should be unique
-            'primary' => true,//whether column should be the primary key
+            'name' => 'dso_id', //column name to be used
+            'type' => 'VARCHAR(16)', //column type
+            'index' => 'BTREE', //whether/how to index
+            'unique' => true, //whether column should be unique
+            'primary' => true, //whether column should be the primary key
         ],
         'dso.type' => [
             'name' => 'dso_type',

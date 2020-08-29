@@ -16,6 +16,6 @@ class SQLiteDriverTest extends AbstractSQLDriverTest
 
     public static function setUpBeforeClass()
     {
-        unlink(__DIR__.'/driver.test.sqlite');
+        @unlink(__DIR__.'/driver.test.sqlite');
     }
 }

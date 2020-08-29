@@ -17,6 +17,6 @@ class SQLiteDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
 
     public static function setUpBeforeClass()
     {
-        unlink(__DIR__.'/integration.test.sqlite');
+        @unlink(__DIR__.'/integration.test.sqlite');
     }
 }

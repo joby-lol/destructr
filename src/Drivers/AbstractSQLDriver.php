@@ -196,9 +196,6 @@ abstract class AbstractSQLDriver extends AbstractDriver
         $out = $this->pdo->exec(
             $this->sql_save_schema($table, $schema)
         ) !== false;
-        if (!$out) {
-            var_dump($this->errorInfo());
-        }
         return $out;
     }
 

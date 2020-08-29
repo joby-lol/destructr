@@ -3,8 +3,6 @@
 namespace Destructr\Drivers;
 
 use Destructr\DSOInterface;
-use Destructr\Search;
-use Flatrr\FlatArray;
 
 /**
  * What this driver supports: Any version of SQLite3 in PHP environments that allow
@@ -67,14 +65,14 @@ class SQLiteDriver extends AbstractSQLDriver
     {
         $names = array_map(
             function ($e) {
-                return '`'.preg_replace('/^:/', '', $e).'` = '.$e;
+                return '`' . preg_replace('/^:/', '', $e) . '` = ' . $e;
             },
             array_keys($args['columns'])
         );
         $out = [];
         $out[] = 'UPDATE `' . $args['table'] . '`';
         $out[] = 'SET';
-        $out[] = implode(','.PHP_EOL,$names);
+        $out[] = implode(',' . PHP_EOL, $names);
         $out[] = 'WHERE `dso_id` = :dso_id';
         $out = implode(PHP_EOL, $out) . ';';
         return $out;
@@ -144,24 +142,24 @@ class SQLiteDriver extends AbstractSQLDriver
         return @"$out";
     }
 
-    protected function buildIndexes(string $table, array $schema)
+    protected function buildIndexes(string $table, array $schema): bool
     {
+        $result = true;
         foreach ($schema as $key => $vcol) {
-            $idxResult = true;
             if (@$vcol['primary']) {
                 //sqlite automatically creates this index
             } elseif (@$vcol['unique']) {
-                $idxResult = $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+                $result = $result &&
+                    $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
             } elseif (@$vcol['index']) {
-                $idxResult = $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
-            }
-            if (!$idxResult) {
-                $out = false;
+                $idxResult = $result &&
+                $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
             }
         }
+        return $result;
     }
 
-    protected function rebuildSchema($table, $schema)
+    protected function rebuildSchema($table, $schema): bool
     {
         //TODO: fix all columns to match JSON, this will be SLOW
     }
@@ -190,23 +188,38 @@ class SQLiteDriver extends AbstractSQLDriver
         return "DESTRUCTR_JSON_EXTRACT(`json_data`,'$.{$path}')";
     }
 
-    protected function addColumns($table,$schema):bool
+    protected function addColumns($table, $schema): bool
     {
-        //TODO: finish this
-        return false;
+        $out = true;
+        foreach ($schema as $path => $col) {
+            $line = "ALTER TABLE `{$table}` ADD COLUMN `${col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
+            if (@$col['primary']) {
+                $line .= ' STORED;';
+            } else {
+                $line .= ' VIRTUAL;';
+            }
+            $out = $out &&
+            $this->pdo->exec($line) !== false;
+        }
+        return $out;
     }
 
-    protected function removeColumns($table,$schema):bool
+    protected function removeColumns($table, $schema): bool
     {
-        //TODO: finish this
-        return false;
+        $out = true;
+        foreach ($schema as $path => $col) {
+            $out = $out &&
+            $this->pdo->exec("ALTER TABLE `{$table}` DROP COLUMN `${col['name']}`;") !== false;
+        }
+        return $out;
     }
 
     protected function sql_create_schema_table(): string
     {
         return <<<EOT
 CREATE TABLE IF NOT EXISTS `destructr_schema`(
-    schema_table VARCHAR(100) PRIMARY KEY NOT NULL,
+    schema_time BIGINT NOT NULL,
+    schema_table VARCHAR(100) NOT NULL,
     schema_schema TEXT NOT NULL
 );
 EOT;

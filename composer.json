@@ -21,6 +21,9 @@
         "test-mysql": [
             "phpunit --testsuite MySQL"
         ],
+        "test-mariadb": [
+            "phpunit --testsuite MariaDB"
+        ],
         "test-sqlite": [
             "phpunit --testsuite SQLite"
         ]

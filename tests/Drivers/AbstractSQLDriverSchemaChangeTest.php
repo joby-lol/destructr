@@ -15,7 +15,7 @@ abstract class AbstractSQLDriverSchemaChangeTest extends TestCase
     use TestCaseTrait;
     const TEST_TABLE = 'schematest';
 
-    public function testSchemaCreation()
+    public function testSchemaChanges()
     {
         // set up using schema A
         $factory = $this->createFactoryA();

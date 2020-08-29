@@ -167,6 +167,8 @@ abstract class AbstractSQLDriver extends AbstractDriver
         $out = $this->pdo->exec($sql) !== false;
         if ($out) {
             $this->buildIndexes($table, $schema);
+        }else {
+            var_dump($this->errorInfo());
         }
         return $out;
     }

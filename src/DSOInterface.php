@@ -11,17 +11,17 @@ use Flatrr\FlatArrayInterface;
  */
 interface DSOInterface extends FlatArrayInterface
 {
-    public function __construct(array $data = null, DSOFactoryInterface $factory = null);
-    public function factory(DSOFactoryInterface $factory = null) : ?DSOFactoryInterface;
+    public function __construct(array $data = null, Factory $factory = null);
+    public function factory(Factory $factory = null): ?Factory;
 
-    public function set(string $name = null, $value, $force=false);
+    public function set(?string $name, $value, $force = false);
 
     public function resetChanges();
-    public function changes() : array;
-    public function removals() : array;
+    public function changes(): array;
+    public function removals(): array;
 
-    public function insert() : bool;
-    public function update(bool $sneaky = false) : bool;
-    public function delete(bool $permanent = false) : bool;
-    public function undelete() : bool;
+    public function insert(): bool;
+    public function update(bool $sneaky = false): bool;
+    public function delete(bool $permanent = false): bool;
+    public function undelete(): bool;
 }

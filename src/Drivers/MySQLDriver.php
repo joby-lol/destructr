@@ -5,64 +5,15 @@ namespace Destructr\Drivers;
 /**
  * What this driver supports: MySQL >= 5.7.8
  */
-class MySQLDriver extends AbstractDriver
+class MySQLDriver extends AbstractSQLDriver
 {
-    /**
-     * Within the search we expand strings like ${dso.id} into JSON queries.
-     * Note that the Search will have already had these strings expanded into
-     * column names if there are virtual columns configured for them. That
-     * happens in the Factory before it gets here.
-     */
-    protected function sql_select(array $args): string
-    {
-        //extract query parts from Search and expand paths
-        $where = $this->expandPaths($args['search']->where());
-        $order = $this->expandPaths($args['search']->order());
-        $limit = $args['search']->limit();
-        $offset = $args['search']->offset();
-        //select from
-        $out = ["SELECT * FROM `{$args['table']}`"];
-        //where statement
-        if ($where !== null) {
-            $out[] = "WHERE " . $where;
-        }
-        //order statement
-        if ($order !== null) {
-            $out[] = "ORDER BY " . $order;
-        }
-        //limit
-        if ($limit !== null) {
-            $out[] = "LIMIT " . $limit;
-        }
-        //offset
-        if ($offset !== null) {
-            $out[] = "OFFSET " . $offset;
-        }
-        //return
-        return implode(PHP_EOL, $out) . ';';
-    }
-
-    protected function sql_count(array $args): string
-    {
-        //extract query parts from Search and expand paths
-        $where = $this->expandPaths($args['search']->where());
-        //select from
-        $out = ["SELECT count(dso_id) FROM `{$args['table']}`"];
-        //where statement
-        if ($where !== null) {
-            $out[] = "WHERE " . $where;
-        }
-        //return
-        return implode(PHP_EOL, $out) . ';';
-    }
-
     protected function sql_ddl(array $args = []): string
     {
         $out = [];
         $out[] = "CREATE TABLE IF NOT EXISTS `{$args['table']}` (";
         $lines = [];
         $lines[] = "`json_data` JSON DEFAULT NULL";
-        foreach ($args['virtualColumns'] as $path => $col) {
+        foreach ($args['schema'] as $path => $col) {
             $line = "`{$col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
             if (@$col['primary']) {
                 $line .= ' STORED';
@@ -71,18 +22,30 @@ class MySQLDriver extends AbstractDriver
             }
             $lines[] = $line;
         }
-        foreach ($args['virtualColumns'] as $path => $col) {
-            if (@$col['primary']) {
-                $lines[] = "PRIMARY KEY (`{$col['name']}`)";
-            } elseif (@$col['unique'] && $as = @$col['index']) {
-                $lines[] = "UNIQUE KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
-            } elseif ($as = @$col['index']) {
-                $lines[] = "KEY `{$args['table']}_{$col['name']}_idx` (`{$col['name']}`) USING $as";
-            }
-        }
         $out[] = implode(',' . PHP_EOL, $lines);
         $out[] = ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-        return implode(PHP_EOL, $out);
+        $out = implode(PHP_EOL, $out);
+        return $out;
+    }
+
+    protected function buildIndexes(string $table, array $schema): bool
+    {
+        foreach ($schema as $path => $col) {
+            if (@$col['primary']) {
+                $this->pdo->exec(
+                    "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING BTREE"
+                );
+            } elseif (@$col['unique'] && $as = @$col['index']) {
+                $this->pdo->exec(
+                    "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
+                );
+            } elseif ($as = @$col['index']) {
+                $this->pdo->exec(
+                    "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
+                );
+            }
+        }
+        return true;
     }
 
     protected function expandPath(string $path): string
@@ -90,7 +53,7 @@ class MySQLDriver extends AbstractDriver
         return "JSON_UNQUOTE(JSON_EXTRACT(`json_data`,'$.{$path}'))";
     }
 
-    protected function sql_setJSON(array $args): string
+    protected function sql_set_json(array $args): string
     {
         return 'UPDATE `' . $args['table'] . '` SET `json_data` = :data WHERE `dso_id` = :dso_id;';
     }
@@ -100,8 +63,53 @@ class MySQLDriver extends AbstractDriver
         return "INSERT INTO `{$args['table']}` (`json_data`) VALUES (:data);";
     }
 
-    protected function sql_delete(array $args): string
+    protected function addColumns($table, $schema): bool
     {
-        return 'DELETE FROM `' . $args['table'] . '` WHERE `dso_id` = :dso_id;';
+        $out = true;
+        foreach ($schema as $path => $col) {
+            $line = "ALTER TABLE `{$table}` ADD COLUMN `${col['name']}` {$col['type']} GENERATED ALWAYS AS (" . $this->expandPath($path) . ")";
+            if (@$col['primary']) {
+                $line .= ' STORED;';
+            } else {
+                $line .= ' VIRTUAL;';
+            }
+            $out = $out &&
+            $this->pdo->exec($line) !== false;
+        }
+        return $out;
+    }
+
+    protected function removeColumns($table, $schema): bool
+    {
+        $out = true;
+        foreach ($schema as $path => $col) {
+            $out = $out &&
+            $this->pdo->exec("ALTER TABLE `{$table}` DROP COLUMN `${col['name']}`;") !== false;
+        }
+        return $out;
+    }
+
+    protected function rebuildSchema($table, $schema): bool
+    {
+        //this does nothing in databases that can generate columns themselves
+        return true;
+    }
+
+    protected function sql_create_schema_table(): string
+    {
+        return <<<EOT
+CREATE TABLE `destructr_schema` (
+    `schema_time` bigint NOT NULL,
+    `schema_table` varchar(100) NOT NULL,
+    `schema_schema` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`schema_schema`)),
+    PRIMARY KEY (`schema_time`,`schema_table`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+EOT;
+    }
+
+    protected function sql_table_exists(string $table): string
+    {
+        $table = preg_replace('/[^a-zA-Z0-9\-_]/', '', $table);
+        return 'SELECT 1 FROM ' . $table . ' LIMIT 1';
     }
 }

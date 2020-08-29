@@ -3,9 +3,6 @@
 namespace Destructr\Drivers;
 
 use Destructr\DSOInterface;
-use Destructr\Factory;
-use Destructr\Search;
-use Flatrr\FlatArray;
 
 /**
  * What this driver supports: Any version of SQLite3 in PHP environments that allow
@@ -17,64 +14,8 @@ use Flatrr\FlatArray;
  * your updating through Destructr, but is something to be cognizent of if your
  * data is being updated outside Destructr.
  */
-class SQLiteDriver extends AbstractDriver
+class SQLiteDriver extends AbstractSQLDriver
 {
-    public function select(string $table, Search $search, array $params)
-    {
-        $results = parent::select($table, $search, $params);
-        foreach ($results as $rkey => $row) {
-            $new = new FlatArray();
-            foreach (json_decode($row['json_data'], true) as $key => $value) {
-                $new->set(str_replace('|', '.', $key), $value);
-            }
-            $results[$rkey]['json_data'] = json_encode($new->get());
-        }
-        return $results;
-    }
-
-    protected function sql_count(array $args): string
-    {
-        //extract query parts from Search and expand paths
-        $where = $this->expandPaths($args['search']->where());
-        //select from
-        $out = ["SELECT count(dso_id) FROM `{$args['table']}`"];
-        //where statement
-        if ($where !== null) {
-            $out[] = "WHERE " . $where;
-        }
-        //return
-        return implode(PHP_EOL, $out) . ';';
-    }
-
-    protected function sql_select(array $args): string
-    {
-        //extract query parts from Search and expand paths
-        $where = $this->expandPaths($args['search']->where());
-        $order = $this->expandPaths($args['search']->order());
-        $limit = $args['search']->limit();
-        $offset = $args['search']->offset();
-        //select from
-        $out = ["SELECT * FROM `{$args['table']}`"];
-        //where statement
-        if ($where !== null) {
-            $out[] = "WHERE " . $where;
-        }
-        //order statement
-        if ($order !== null) {
-            $out[] = "ORDER BY " . $order;
-        }
-        //limit
-        if ($limit !== null) {
-            $out[] = "LIMIT " . $limit;
-        }
-        //offset
-        if ($offset !== null) {
-            $out[] = "OFFSET " . $offset;
-        }
-        //return
-        return implode(PHP_EOL, $out) . ';';
-    }
-
     public function update(string $table, DSOInterface $dso): bool
     {
         if (!$dso->changes() && !$dso->removals()) {
@@ -82,7 +23,7 @@ class SQLiteDriver extends AbstractDriver
         }
         $columns = $this->dso_columns($dso);
         $s = $this->getStatement(
-            'setJSON',
+            'set_json',
             [
                 'table' => $table,
                 'columns' => $columns,
@@ -104,6 +45,72 @@ class SQLiteDriver extends AbstractDriver
         return $s->execute($columns);
     }
 
+    protected function updateTable($table, $schema): bool
+    {
+        $current = $this->getSchema($table);
+        if (!$current || $schema == $current) {
+            return true;
+        }
+        //create new table
+        $table_tmp = "{$table}_tmp_" . md5(rand());
+        $sql = $this->sql_ddl([
+            'table' => $table_tmp,
+            'schema' => $schema,
+        ]);
+        if ($this->pdo->exec($sql) === false) {
+            return false;
+        }
+        //copy data into it
+        $sql = ["INSERT INTO $table_tmp"];
+        $cols = ["json_data"];
+        $srcs = ["json_data"];
+        foreach ($schema as $path => $col) {
+            $cols[] = $col['name'];
+            $srcs[] = $this->expandPath($path);
+        }
+        $sql[] = '(' . implode(',', $cols) . ')';
+        $sql[] = 'SELECT';
+        $sql[] = implode(',', $srcs);
+        $sql[] = "FROM $table";
+        $sql = implode(PHP_EOL, $sql);
+        if ($this->pdo->exec($sql) === false) {
+            return false;
+        }
+        //remove old table, rename new table to old table
+        if ($this->pdo->exec("DROP TABLE $table") === false) {
+            return false;
+        }
+        if ($this->pdo->exec("ALTER TABLE $table_tmp RENAME TO $table") === false) {
+            return false;
+        }
+        //set up indexes
+        if (!$this->buildIndexes($table, $schema)) {
+            return false;
+        }
+        //save schema
+        $this->saveSchema($table, $schema);
+        //return result
+        return true;
+    }
+
+    protected function addColumns($table, $schema): bool
+    {
+        //does nothing
+        return true;
+    }
+
+    protected function removeColumns($table, $schema): bool
+    {
+        //does nothing
+        return true;
+    }
+
+    protected function rebuildSchema($table, $schema): bool
+    {
+        //does nothing
+        return true;
+    }
+
     protected function sql_insert(array $args): string
     {
         $out = [];
@@ -120,18 +127,18 @@ class SQLiteDriver extends AbstractDriver
         return $out;
     }
 
-    protected function sql_setJSON(array $args): string
+    protected function sql_set_json(array $args): string
     {
         $names = array_map(
             function ($e) {
-                return '`'.preg_replace('/^:/', '', $e).'` = '.$e;
+                return '`' . preg_replace('/^:/', '', $e) . '` = ' . $e;
             },
             array_keys($args['columns'])
         );
         $out = [];
         $out[] = 'UPDATE `' . $args['table'] . '`';
         $out[] = 'SET';
-        $out[] = implode(','.PHP_EOL,$names);
+        $out[] = implode(',' . PHP_EOL, $names);
         $out[] = 'WHERE `dso_id` = :dso_id';
         $out = implode(PHP_EOL, $out) . ';';
         return $out;
@@ -148,11 +155,6 @@ class SQLiteDriver extends AbstractDriver
         ]);
     }
 
-    protected function sql_delete(array $args): string
-    {
-        return 'DELETE FROM `' . $args['table'] . '` WHERE `dso_id` = :dso_id;';
-    }
-
     /**
      * Used to extract a list of column/parameter names for a given DSO, based
      * on the current values.
@@ -162,8 +164,8 @@ class SQLiteDriver extends AbstractDriver
      */
     protected function dso_columns(DSOInterface $dso)
     {
-        $columns = [':json_data' => $this->json_encode($dso->get())];
-        foreach ($dso->factory()->virtualColumns() as $vk => $vv) {
+        $columns = [':json_data' => json_encode($dso->get())];
+        foreach ($this->getSchema($dso->factory()->table()) ?? [] as $vk => $vv) {
             $columns[':' . $vv['name']] = $dso->get($vk);
         }
         return $columns;
@@ -206,27 +208,21 @@ class SQLiteDriver extends AbstractDriver
         return @"$out";
     }
 
-    public function createTable(string $table, array $virtualColumns): bool
+    protected function buildIndexes(string $table, array $schema): bool
     {
-        $sql = $this->sql_ddl([
-            'table' => $table,
-            'virtualColumns' => $virtualColumns,
-        ]);
-        $out = $this->pdo->exec($sql) !== false;
-        foreach ($virtualColumns as $key => $vcol) {
-            $idxResult = true;
+        $result = true;
+        foreach ($schema as $key => $vcol) {
             if (@$vcol['primary']) {
                 //sqlite automatically creates this index
             } elseif (@$vcol['unique']) {
-                $idxResult = $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+                $result = $result &&
+                $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
             } elseif (@$vcol['index']) {
-                $idxResult = $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
-            }
-            if (!$idxResult) {
-                $out = false;
+                $idxResult = $result &&
+                $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
             }
         }
-        return $out;
+        return $result;
     }
 
     protected function sql_ddl(array $args = []): string
@@ -235,7 +231,7 @@ class SQLiteDriver extends AbstractDriver
         $out[] = "CREATE TABLE IF NOT EXISTS `{$args['table']}` (";
         $lines = [];
         $lines[] = "`json_data` TEXT DEFAULT NULL";
-        foreach ($args['virtualColumns'] as $path => $col) {
+        foreach ($args['schema'] as $path => $col) {
             $line = "`{$col['name']}` {$col['type']}";
             if (@$col['primary']) {
                 $line .= ' PRIMARY KEY';
@@ -253,8 +249,20 @@ class SQLiteDriver extends AbstractDriver
         return "DESTRUCTR_JSON_EXTRACT(`json_data`,'$.{$path}')";
     }
 
-    public function json_encode($a, ?array &$b = null, string $prefix = '')
+    protected function sql_create_schema_table(): string
     {
-        return json_encode($a);
+        return <<<EOT
+CREATE TABLE IF NOT EXISTS `destructr_schema`(
+    schema_time BIGINT NOT NULL,
+    schema_table VARCHAR(100) NOT NULL,
+    schema_schema TEXT NOT NULL
+);
+EOT;
+    }
+
+    protected function sql_table_exists(string $table): string
+    {
+        $table = preg_replace('/[^a-zA-Z0-9\-_]/', '', $table);
+        return 'SELECT 1 FROM ' . $table . ' LIMIT 1';
     }
 }

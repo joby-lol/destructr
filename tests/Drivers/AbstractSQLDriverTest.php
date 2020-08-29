@@ -13,18 +13,18 @@ use PHPUnit\Framework\TestCase;
  * This class tests a factory in isolation. In the name of simplicity it's a bit
  * simplistic, because it doesn't get the help of the Factory.
  *
- * There is also a class called AbstractDriverIntegrationTest that tests drivers
+ * There is also a class called AbstractSQLDriverIntegrationTest that tests drivers
  * through a Factory. The results of that are harder to interpret, but more
  * properly and thoroughly test the Drivers in a real environment.
  */
-abstract class AbstractDriverTest extends TestCase
+abstract class AbstractSQLDriverTest extends TestCase
 {
     use TestCaseTrait;
 
     /*
     In actual practice, these would come from a Factory
      */
-    protected $virtualColumns = [
+    protected $schema = [
         'dso.id' => [
             'name' => 'dso_id',
             'type' => 'VARCHAR(16)',
@@ -43,17 +43,22 @@ abstract class AbstractDriverTest extends TestCase
         ],
     ];
 
-    public function testCreateTable()
+    public function testPrepareEnvironment()
     {
         $driver = $this->createDriver();
-        $driver->createTable('testCreateTable', $this->virtualColumns);
-        $this->assertEquals(0, $this->getConnection()->getRowCount('testCreateTable'));
+        $this->assertFalse($driver->tableExists('testPrepareEnvironment'));
+        $this->assertFalse($driver->tableExists('destructr_schema'));
+        $driver->prepareEnvironment('testPrepareEnvironment', $this->schema);
+        $this->assertTrue($driver->tableExists('destructr_schema'));
+        $this->assertTrue($driver->tableExists('testPrepareEnvironment'));
+        $this->assertEquals(1, $this->getConnection()->getRowCount('destructr_schema'));
+        $this->assertEquals(0, $this->getConnection()->getRowCount('testPrepareEnvironment'));
     }
 
     public function testInsert()
     {
         $driver = $this->createDriver();
-        $driver->createTable('testInsert', $this->virtualColumns);
+        $driver->prepareEnvironment('testInsert', $this->schema);
         //test inserting an object
         $o = new DSO(['dso.id' => 'first-inserted'],new Factory($driver,'no_table'));
         $this->assertTrue($driver->insert('testInsert', $o));
@@ -62,16 +67,12 @@ abstract class AbstractDriverTest extends TestCase
         $o = new DSO(['dso.id' => 'second-inserted'],new Factory($driver,'no_table'));
         $this->assertTrue($driver->insert('testInsert', $o));
         $this->assertEquals(2, $this->getConnection()->getRowCount('testInsert'));
-        //test inserting a second object with an existing id, it shouldn't work
-        $o = new DSO(['dso.id' => 'first-inserted'],new Factory($driver,'no_table'));
-        $this->assertFalse($driver->insert('testInsert', $o));
-        $this->assertEquals(2, $this->getConnection()->getRowCount('testInsert'));
     }
 
     public function testSelect()
     {
         $driver = $this->createDriver();
-        $driver->createTable('testSelect', $this->virtualColumns);
+        $driver->prepareEnvironment('testSelect', $this->schema);
         //set up dummy data
         $this->setup_testSelect();
         //empty search
@@ -103,47 +104,6 @@ abstract class AbstractDriverTest extends TestCase
         $search->where('${foo} = :param');
         $results = $driver->select('testSelect', $search, [':param' => 'nonexistent foo value']);
         $this->assertSame(0, count($results));
-    }
-
-    public function testDelete()
-    {
-        $driver = $this->createDriver();
-        $driver->createTable('testDelete', $this->virtualColumns);
-        //set up dummy data
-        $this->setup_testDelete();
-        //try deleting an item
-        $dso = new DSO(['dso.id' => 'item-a-1'],new Factory($driver,'no_table'));
-        $driver->delete('testDelete', $dso);
-        $this->assertEquals(3, $this->getConnection()->getRowCount('testDelete'));
-        //try deleting an item at the other end of the table
-        $dso = new DSO(['dso.id' => 'item-b-2'],new Factory($driver,'no_table'));
-        $driver->delete('testDelete', $dso);
-        $this->assertEquals(2, $this->getConnection()->getRowCount('testDelete'));
-    }
-
-    protected function setup_testDelete()
-    {
-        $driver = $this->createDriver();
-        $driver->insert('testDelete', new DSO([
-            'dso' => ['id' => 'item-a-1', 'type' => 'type-a'],
-            'foo' => 'bar',
-            'sort' => 'a',
-        ],new Factory($driver,'no_table')));
-        $driver->insert('testDelete', new DSO([
-            'dso' => ['id' => 'item-a-2', 'type' => 'type-a'],
-            'foo' => 'baz',
-            'sort' => 'c',
-        ],new Factory($driver,'no_table')));
-        $driver->insert('testDelete', new DSO([
-            'dso' => ['id' => 'item-b-1', 'type' => 'type-b'],
-            'foo' => 'buz',
-            'sort' => 'b',
-        ],new Factory($driver,'no_table')));
-        $driver->insert('testDelete', new DSO([
-            'dso' => ['id' => 'item-b-2', 'type' => 'type-b', 'deleted' => 100],
-            'foo' => 'quz',
-            'sort' => 'd',
-        ],new Factory($driver,'no_table')));
     }
 
     protected function setup_testSelect()
@@ -189,10 +149,10 @@ abstract class AbstractDriverTest extends TestCase
     public static function setUpBeforeClass()
     {
         $pdo = static::createPDO();
-        $pdo->exec('DROP TABLE testCreateTable');
+        $pdo->exec('DROP TABLE testPrepareEnvironment');
         $pdo->exec('DROP TABLE testInsert');
         $pdo->exec('DROP TABLE testSelect');
-        $pdo->exec('DROP TABLE testDelete');
+        $pdo->exec('DROP TABLE destructr_schema');
     }
 
     protected static function createPDO()

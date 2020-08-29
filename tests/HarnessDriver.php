@@ -2,7 +2,7 @@
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr;
 
-class HarnessDriver implements Drivers\DSODriverInterface
+class HarnessDriver extends Drivers\AbstractDriver
 {
     const EXTENSIBLE_VIRTUAL_COLUMNS = true;
     public $last_select;
@@ -18,7 +18,7 @@ class HarnessDriver implements Drivers\DSODriverInterface
         return null;
     }
 
-    public function createTable(string $table, array $virtualColumns) : bool
+    public function prepareEnvironment(string $table, array $schema) : bool
     {
         //TODO: add tests for this too
         return false;

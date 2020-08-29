@@ -2,8 +2,6 @@
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr;
 
-use Destructr\DSOFactoryInterface;
-
 class Search implements \Serializable
 {
     protected $factory;
@@ -12,7 +10,7 @@ class Search implements \Serializable
     protected $limit;
     protected $offset;
 
-    public function __construct(DSOFactoryInterface $factory = null)
+    public function __construct(Factory $factory = null)
     {
         $this->factory = $factory;
     }

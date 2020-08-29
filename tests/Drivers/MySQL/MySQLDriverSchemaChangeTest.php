@@ -3,10 +3,10 @@
 declare (strict_types = 1);
 namespace Destructr\Drivers\MySQL;
 
-use Destructr\Drivers\AbstractSQLDriverIntegrationTest;
+use Destructr\Drivers\AbstractSQLDriverSchemaChangeTest;
 use Destructr\Drivers\MySQLDriver;
 
-class MySQLDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
+class MySQLDriverSchemaChangeTest extends AbstractSQLDriverSchemaChangeTest
 {
     const DRIVER_CLASS = MySQLDriver::class;
     const DRIVER_DSN = 'mysql:host=127.0.0.1;dbname=test';

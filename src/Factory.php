@@ -2,6 +2,7 @@
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
 namespace Destructr;
 
+use Destructr\Drivers\AbstractDriver;
 use mofodojodino\ProfanityFilter\Check;
 
 /**
@@ -19,25 +20,30 @@ use mofodojodino\ProfanityFilter\Check;
  *  * Executing Searches (which largely consists of passing them to the Driver)
  *  * Inspecting unstructured data straight from the database and figuring out what class to make it (defaults to just DSO)
  */
-class Factory implements DSOFactoryInterface
+class Factory
 {
     const ID_CHARS = 'abcdefghijkmnorstuvwxyz0123456789';
     const ID_LENGTH = 16;
 
-    protected $driver;
-    protected $table;
     /**
-     * Virtual columns are only supported by modern SQL servers. Most of the
-     * legacy drivers will only use the ones defined in CORE_VIRTUAL_COLUMNS,
-     * but that should be handled automatically.
+     * @var Drivers\AbstractDriver
      */
-    protected $virtualColumns = [
+    protected $driver;
+    /**
+     * @var string
+     */
+    protected $table;
+
+    /**
+     * Virtual columns that should be created for sorting/indexing in the SQL server
+     */
+    protected $schema = [
         'dso.id' => [
-            'name' => 'dso_id',
-            'type' => 'VARCHAR(16)',
-            'index' => 'BTREE',
-            'unique' => true,
-            'primary' => true,
+            'name' => 'dso_id', //column name to be used
+            'type' => 'VARCHAR(16)', //column type
+            'index' => 'BTREE', //whether/how to index
+            'unique' => true, //whether column should be unique
+            'primary' => true, //whether column should be the primary key
         ],
         'dso.type' => [
             'name' => 'dso_type',
@@ -51,10 +57,31 @@ class Factory implements DSOFactoryInterface
         ],
     ];
 
-    public function __construct(Drivers\DSODriverInterface $driver, string $table)
+    public function __construct(Drivers\AbstractDriver $driver, string $table)
     {
         $this->driver = $driver;
         $this->table = $table;
+    }
+
+    public function table(): string
+    {
+        return $this->table;
+    }
+
+    public function driver(): AbstractDriver
+    {
+        return $this->driver;
+    }
+
+    public function tableExists(): bool
+    {
+        return $this->driver->tableExists($this->table);
+    }
+
+    public function createSchemaTable(): bool
+    {
+        $this->driver->createSchemaTable('destructr_schema');
+        return $this->driver->tableExists('destructr_schema');
     }
 
     public function quote(string $str): string
@@ -122,22 +149,30 @@ class Factory implements DSOFactoryInterface
         return $dso;
     }
 
-    public function createTable(): bool
+    public function prepareEnvironment(): bool
     {
-        return $this->driver->createTable(
+        return $this->driver->prepareEnvironment(
             $this->table,
-            $this->virtualColumns
+            $this->schema
         );
     }
 
-    public function virtualColumns(): array
+    public function updateEnvironment(): bool
     {
-        return $this->virtualColumns;
+        return $this->driver->updateEnvironment(
+            $this->table,
+            $this->schema
+        );
+    }
+
+    public function schema(): array
+    {
+        return $this->driver->getSchema($this->table) ?? $this->schema;
     }
 
     protected function virtualColumnName($path): ?string
     {
-        return @$this->virtualColumns[$path]['name'];
+        return @$this->schema()[$path]['name'];
     }
 
     public function update(DSOInterface $dso, bool $sneaky = false): bool

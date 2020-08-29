@@ -7,9 +7,10 @@ use Destructr\Factory;
 use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
 
-abstract class AbstractDriverIntegrationTest extends TestCase
+abstract class AbstractSQLDriverIntegrationTest extends TestCase
 {
     use TestCaseTrait;
+    const TEST_TABLE = 'integrationtest';
 
     public static function setUpBeforeClass()
     {
@@ -17,10 +18,10 @@ abstract class AbstractDriverIntegrationTest extends TestCase
         $pdo->exec('DROP TABLE ' . static::TEST_TABLE);
     }
 
-    public function testCreateTable()
+    public function testPrepareEnvironment()
     {
         $factory = $this->createFactory();
-        $factory->createTable();
+        $factory->prepareEnvironment();
         //table should exist and have zero rows
         $this->assertEquals(0, $this->getConnection()->getRowCount(static::TEST_TABLE));
     }

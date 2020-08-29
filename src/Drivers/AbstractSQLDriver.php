@@ -154,11 +154,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
     public function createTable(string $table, array $schema): bool
     {
         // check if table exists, if it doesn't, save into schema table
-        if (!$this->tableExists($table)) {
-            $this->saveSchema($table, $schema);
-        } else {
-            return true;
-        }
+        $saveSchema = !$this->tableExists($table);
         // create table from scratch
         $sql = $this->sql_ddl([
             'table' => $table,
@@ -167,8 +163,9 @@ abstract class AbstractSQLDriver extends AbstractDriver
         $out = $this->pdo->exec($sql) !== false;
         if ($out) {
             $this->buildIndexes($table, $schema);
-        }else {
-            var_dump($this->errorInfo());
+            if ($saveSchema) {
+                $this->saveSchema($table, $schema);
+            }
         }
         return $out;
     }

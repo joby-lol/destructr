@@ -6,9 +6,9 @@ php:
   - 7.4
 before_install:
   - mysql -e 'CREATE DATABASE test'
-  - docker pull mariadb:10.2
+  - docker pull mariadb:10.3
   - docker run -d -p 127.0.0.1:3307:3306 --name mysqld -e MYSQL_DATABASE=destructrtest -e MYSQL_USER=destructrtest -e MYSQL_PASSWORD=destructrtest -e MYSQL_ROOT_PASSWORD=verysecret mariadb:10.1 --innodb_log_file_size=256MB --innodb_buffer_pool_size=512MB --max_allowed_packet=16MB
-  - sleep 30
+  - sleep 15
 install:
   - composer install
 script: composer test

@@ -87,6 +87,8 @@ class SQLiteDriver extends AbstractSQLDriver
         if (!$this->buildIndexes($table, $schema)) {
             return false;
         }
+        //save schema
+        $this->saveSchema($table, $schema);
         //return result
         return true;
     }

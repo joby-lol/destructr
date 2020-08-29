@@ -7,7 +7,7 @@ use Destructr\Factory;
 
 class FactorySchemaB extends Factory
 {
-    protected $schema = [
+    public $schema = [
         'dso.id' => [
             'name' => 'dso_id', //column name to be used
             'type' => 'VARCHAR(16)', //column type

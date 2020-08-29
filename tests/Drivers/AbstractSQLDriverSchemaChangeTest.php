@@ -21,6 +21,11 @@ abstract class AbstractSQLDriverSchemaChangeTest extends TestCase
         $factory = $this->createFactoryA();
         $factory->prepareEnvironment();
         $factory->updateEnvironment();
+        // verify schema in database
+        $this->assertEquals(
+            $factory->schema,
+            $factory->driver()->getSchema('schematest')
+        );
         // add some content
         $new = $factory->create([
             'dso.id' => 'dso1',
@@ -51,9 +56,15 @@ abstract class AbstractSQLDriverSchemaChangeTest extends TestCase
             $this->assertEquals(['dso_id' => "dso$i", 'test_a' => "value a$i", 'test_b' => "value b$i"], $row);
         }
         // change to schema B
+        sleep(1); //a table can't have its schema updated faster than once per second
         $factory = $this->createFactoryB();
         $factory->prepareEnvironment();
         $factory->updateEnvironment();
+        // verify schema in database
+        $this->assertEquals(
+            $factory->schema,
+            $factory->driver()->getSchema('schematest')
+        );
         // verify data in table matches
         $pdo = $this->createPDO();
         $this->assertEquals(3, $this->getConnection()->getRowCount('schematest'));

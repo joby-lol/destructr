@@ -7,7 +7,7 @@ php:
 before_install:
   - mysql -e 'CREATE DATABASE test'
   - docker pull mariadb:10.1
-  - docker run -d -p 127.0.0.1:3307 --name mariadbd -e MYSQL_DATABASE=destructrtest -e MYSQL_USER=destructrtest MYSQL_PASSWORD=secret mariadb:10.1
+  - docker run -d -p 127.0.0.1:3307:3307 --name mariadbd -e MYSQL_DATABASE=destructrtest -e MYSQL_USER=destructrtest MYSQL_PASSWORD=secret mariadb:10.1
 install:
   - composer install
 script: composer test

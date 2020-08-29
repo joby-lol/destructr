@@ -13,5 +13,4 @@ class MySQLDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
     const DRIVER_USERNAME = 'root';
     const DRIVER_PASSWORD = null;
     const DRIVER_OPTIONS = null;
-    const TEST_TABLE = 'integrationtest';
 }

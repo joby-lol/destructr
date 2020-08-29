@@ -3,19 +3,19 @@
 declare (strict_types = 1);
 namespace Destructr\Drivers\SQLite;
 
-use Destructr\Drivers\AbstractSQLDriverIntegrationTest;
+use Destructr\Drivers\AbstractSQLDriverSchemaChangeTest;
 use Destructr\Drivers\SQLiteDriver;
 
-class SQLiteDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
+class SQLiteDriverSchemaChangeTest extends AbstractSQLDriverSchemaChangeTest
 {
     const DRIVER_CLASS = SQLiteDriver::class;
-    const DRIVER_DSN = 'sqlite:'.__DIR__.'/integration.test.sqlite';
+    const DRIVER_DSN = 'sqlite:'.__DIR__.'/schema.test.sqlite';
     const DRIVER_USERNAME = 'root';
     const DRIVER_PASSWORD = '';
     const DRIVER_OPTIONS = null;
 
     public static function setUpBeforeClass()
     {
-        @unlink(__DIR__.'/integration.test.sqlite');
+        @unlink(__DIR__.'/schema.test.sqlite');
     }
 }

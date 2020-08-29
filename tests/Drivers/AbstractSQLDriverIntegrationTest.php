@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 abstract class AbstractSQLDriverIntegrationTest extends TestCase
 {
     use TestCaseTrait;
+    const TEST_TABLE = 'integrationtest';
 
     public static function setUpBeforeClass()
     {

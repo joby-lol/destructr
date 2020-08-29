@@ -13,5 +13,4 @@ class MariaDBDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
     const DRIVER_USERNAME = 'destructrtest';
     const DRIVER_PASSWORD = 'destructrtest';
     const DRIVER_OPTIONS = null;
-    const TEST_TABLE = 'integrationtest';
 }

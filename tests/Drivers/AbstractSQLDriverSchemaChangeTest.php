@@ -19,7 +19,9 @@ abstract class AbstractSQLDriverSchemaChangeTest extends TestCase
     {
         // set up using schema A
         $factory = $this->createFactoryA();
+        $this->assertFalse($factory->checkEnvironment());
         $factory->prepareEnvironment();
+        $this->assertTrue($factory->checkEnvironment());
         $factory->updateEnvironment();
         // verify schema in database
         $this->assertEquals(
@@ -58,8 +60,11 @@ abstract class AbstractSQLDriverSchemaChangeTest extends TestCase
         // change to schema B
         sleep(1); //a table can't have its schema updated faster than once per second
         $factory = $this->createFactoryB();
+        $this->assertFalse($factory->checkEnvironment());
         $factory->prepareEnvironment();
+        $this->assertFalse($factory->checkEnvironment());
         $factory->updateEnvironment();
+        $this->assertTrue($factory->checkEnvironment());
         // verify schema in database
         $this->assertEquals(
             $factory->schema,

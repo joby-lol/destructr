@@ -47,11 +47,11 @@ abstract class AbstractSQLDriverTest extends TestCase
     {
         $driver = $this->createDriver();
         $this->assertFalse($driver->tableExists('testPrepareEnvironment'));
-        $this->assertFalse($driver->tableExists('destructr_schema'));
+        $this->assertFalse($driver->tableExists(AbstractDriver::SCHEMA_TABLE));
         $driver->prepareEnvironment('testPrepareEnvironment', $this->schema);
-        $this->assertTrue($driver->tableExists('destructr_schema'));
+        $this->assertTrue($driver->tableExists(AbstractDriver::SCHEMA_TABLE));
         $this->assertTrue($driver->tableExists('testPrepareEnvironment'));
-        $this->assertEquals(1, $this->getConnection()->getRowCount('destructr_schema'));
+        $this->assertEquals(1, $this->getConnection()->getRowCount(AbstractDriver::SCHEMA_TABLE));
         $this->assertEquals(0, $this->getConnection()->getRowCount('testPrepareEnvironment'));
     }
 
@@ -60,11 +60,11 @@ abstract class AbstractSQLDriverTest extends TestCase
         $driver = $this->createDriver();
         $driver->prepareEnvironment('testInsert', $this->schema);
         //test inserting an object
-        $o = new DSO(['dso.id' => 'first-inserted'],new Factory($driver,'no_table'));
+        $o = new DSO(['dso.id' => 'first-inserted'], new Factory($driver, 'no_table'));
         $this->assertTrue($driver->insert('testInsert', $o));
         $this->assertEquals(1, $this->getConnection()->getRowCount('testInsert'));
         //test inserting a second object
-        $o = new DSO(['dso.id' => 'second-inserted'],new Factory($driver,'no_table'));
+        $o = new DSO(['dso.id' => 'second-inserted'], new Factory($driver, 'no_table'));
         $this->assertTrue($driver->insert('testInsert', $o));
         $this->assertEquals(2, $this->getConnection()->getRowCount('testInsert'));
     }
@@ -113,22 +113,22 @@ abstract class AbstractSQLDriverTest extends TestCase
             'dso' => ['id' => 'item-a-1', 'type' => 'type-a'],
             'foo' => 'bar',
             'sort' => 'a',
-        ],new Factory($driver,'no_table')));
+        ], new Factory($driver, 'no_table')));
         $driver->insert('testSelect', new DSO([
             'dso' => ['id' => 'item-a-2', 'type' => 'type-a'],
             'foo' => 'baz',
             'sort' => 'c',
-        ],new Factory($driver,'no_table')));
+        ], new Factory($driver, 'no_table')));
         $driver->insert('testSelect', new DSO([
             'dso' => ['id' => 'item-b-1', 'type' => 'type-b'],
             'foo' => 'buz',
             'sort' => 'b',
-        ],new Factory($driver,'no_table')));
+        ], new Factory($driver, 'no_table')));
         $driver->insert('testSelect', new DSO([
             'dso' => ['id' => 'item-b-2', 'type' => 'type-b', 'deleted' => 100],
             'foo' => 'quz',
             'sort' => 'd',
-        ],new Factory($driver,'no_table')));
+        ], new Factory($driver, 'no_table')));
     }
 
     /**

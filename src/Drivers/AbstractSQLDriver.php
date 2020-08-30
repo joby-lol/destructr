@@ -46,7 +46,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
     public function createSchemaTable()
     {
         $this->pdo->exec($this->sql_create_schema_table());
-        return $this->tableExists('destructr_schema');
+        return $this->tableExists(AbstractDriver::SCHEMA_TABLE);
     }
 
     public function pdo(\PDO $pdo = null): ?\PDO
@@ -117,6 +117,11 @@ abstract class AbstractSQLDriver extends AbstractDriver
         }
     }
 
+    public function checkEnvironment(string $table, array $schema): bool
+    {
+        return $this->tableExists(AbstractDriver::SCHEMA_TABLE) && $this->getSchema($table) == $schema;
+    }
+
     protected function updateTable($table, $schema): bool
     {
         $current = $this->getSchema($table);
@@ -157,7 +162,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
         $tableExists = $this->tableExists($table);
         // if table exists, but no schema does, assume table matches schema and save schema
         if ($tableExists && !$this->getSchema($table)) {
-            $this->saveSchema($table,$schema);
+            $this->saveSchema($table, $schema);
             return true;
         }
         // create table from scratch

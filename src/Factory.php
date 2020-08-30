@@ -63,6 +63,30 @@ class Factory
         $this->table = $table;
     }
 
+    public function checkEnvironment(): bool
+    {
+        return $this->driver->checkEnvironment(
+            $this->table,
+            $this->schema
+        );
+    }
+
+    public function prepareEnvironment(): bool
+    {
+        return $this->driver->prepareEnvironment(
+            $this->table,
+            $this->schema
+        );
+    }
+
+    public function updateEnvironment(): bool
+    {
+        return $this->driver->updateEnvironment(
+            $this->table,
+            $this->schema
+        );
+    }
+
     public function table(): string
     {
         return $this->table;
@@ -80,8 +104,8 @@ class Factory
 
     public function createSchemaTable(): bool
     {
-        $this->driver->createSchemaTable('destructr_schema');
-        return $this->driver->tableExists('destructr_schema');
+        $this->driver->createSchemaTable(AbstractDriver::SCHEMA_TABLE);
+        return $this->driver->tableExists(AbstractDriver::SCHEMA_TABLE);
     }
 
     public function quote(string $str): string
@@ -147,22 +171,6 @@ class Factory
         $dso->hook_create();
         $dso->resetChanges();
         return $dso;
-    }
-
-    public function prepareEnvironment(): bool
-    {
-        return $this->driver->prepareEnvironment(
-            $this->table,
-            $this->schema
-        );
-    }
-
-    public function updateEnvironment(): bool
-    {
-        return $this->driver->updateEnvironment(
-            $this->table,
-            $this->schema
-        );
     }
 
     public function schema(): array

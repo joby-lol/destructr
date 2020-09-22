@@ -1,5 +1,6 @@
 <?php
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
+
 namespace Destructr;
 
 use Destructr\Drivers\AbstractDriver;
@@ -141,7 +142,7 @@ class Factory
      * @param array $data
      * @return string|null
      */
-    function class (array $data): ?string
+    function class(?array $data): ?string
     {
         return null;
     }
@@ -161,7 +162,7 @@ class Factory
         return $this->update($dso, true);
     }
 
-    public function create(array $data = array()): DSOInterface
+    public function create(?array $data = array()): DSOInterface
     {
         if (!($class = $this->class($data))) {
             $class = DSO::class;

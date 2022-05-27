@@ -26,8 +26,8 @@ class MariaDBDriver extends MySQLDriver
 
     protected function buildIndexes(string $table, array $schema): bool
     {
-        try {
-            foreach ($schema as $path => $col) {
+        foreach ($schema as $path => $col) {
+            try {
                 if (@$col['primary']) {
                     $this->pdo->exec(
                         "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING BTREE"
@@ -41,8 +41,8 @@ class MariaDBDriver extends MySQLDriver
                         "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
                     );
                 }
+            } catch (\Throwable $th) {
             }
-        } catch (\Throwable $th) {
         }
         return true;
     }

@@ -12,7 +12,7 @@ use Destructr\DSOInterface;
  * Note that unlike databases with native JSON functions, this driver's generated
  * columns are NOT generated in the database. They are updated by this class whenever
  * the data they reference changes. This doesn't matter much if you're doing all
- * your updating through Destructr, but is something to be cognizent of if your
+ * your updating through Destructr, but is something to be cognizant of if your
  * data is being updated outside Destructr.
  */
 class SQLiteDriver extends AbstractSQLDriver
@@ -212,8 +212,8 @@ class SQLiteDriver extends AbstractSQLDriver
     protected function buildIndexes(string $table, array $schema): bool
     {
         $result = true;
-        try {
-            foreach ($schema as $key => $vcol) {
+        foreach ($schema as $key => $vcol) {
+            try {
                 if (@$vcol['primary']) {
                     //sqlite automatically creates this index
                 } elseif (@$vcol['unique']) {
@@ -223,8 +223,8 @@ class SQLiteDriver extends AbstractSQLDriver
                     $idxResult = $result &&
                         $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
                 }
+            } catch (\Throwable $th) {
             }
-        } catch (\Throwable $th) {
         }
         return $result;
     }

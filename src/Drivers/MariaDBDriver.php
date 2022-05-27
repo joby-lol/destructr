@@ -1,5 +1,6 @@
 <?php
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
+
 namespace Destructr\Drivers;
 
 /**
@@ -25,20 +26,23 @@ class MariaDBDriver extends MySQLDriver
 
     protected function buildIndexes(string $table, array $schema): bool
     {
-        foreach ($schema as $path => $col) {
-            if (@$col['primary']) {
-                $this->pdo->exec(
-                    "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING BTREE"
-                );
-            } elseif (@$col['unique'] && $as = @$col['index']) {
-                $this->pdo->exec(
-                    "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
-                );
-            } elseif ($as = @$col['index']) {
-                $this->pdo->exec(
-                    "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
-                );
+        try {
+            foreach ($schema as $path => $col) {
+                if (@$col['primary']) {
+                    $this->pdo->exec(
+                        "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING BTREE"
+                    );
+                } elseif (@$col['unique'] && $as = @$col['index']) {
+                    $this->pdo->exec(
+                        "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
+                    );
+                } elseif ($as = @$col['index']) {
+                    $this->pdo->exec(
+                        "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
+                    );
+                }
             }
+        } catch (\Throwable $th) {
         }
         return true;
     }
@@ -54,7 +58,7 @@ class MariaDBDriver extends MySQLDriver
                 $line .= ' VIRTUAL;';
             }
             $out = $out &&
-            $this->pdo->exec($line) !== false;
+                $this->pdo->exec($line) !== false;
         }
         return $out;
     }

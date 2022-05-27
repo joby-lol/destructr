@@ -1,5 +1,6 @@
 <?php
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
+
 namespace Destructr\Drivers;
 
 use Destructr\DSOInterface;
@@ -211,16 +212,19 @@ class SQLiteDriver extends AbstractSQLDriver
     protected function buildIndexes(string $table, array $schema): bool
     {
         $result = true;
-        foreach ($schema as $key => $vcol) {
-            if (@$vcol['primary']) {
-                //sqlite automatically creates this index
-            } elseif (@$vcol['unique']) {
-                $result = $result &&
-                $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
-            } elseif (@$vcol['index']) {
-                $idxResult = $result &&
-                $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+        try {
+            foreach ($schema as $key => $vcol) {
+                if (@$vcol['primary']) {
+                    //sqlite automatically creates this index
+                } elseif (@$vcol['unique']) {
+                    $result = $result &&
+                        $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+                } elseif (@$vcol['index']) {
+                    $idxResult = $result &&
+                        $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+                }
             }
+        } catch (\Throwable $th) {
         }
         return $result;
     }

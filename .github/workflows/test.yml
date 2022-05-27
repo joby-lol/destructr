@@ -42,7 +42,7 @@ jobs:
           TEST_VARIABLE: foobar
         run: |
           export TEST_MYSQL_SERVER=127.0.0.1
-          php -r "var_dump(get_ini_value('variables_order'));"
+          php -r "var_dump(ini_get('variables_order'));"
           php -r "var_dump($_ENV);"
       # - name: PHPUnit
       #   run: |

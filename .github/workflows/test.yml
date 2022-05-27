@@ -31,15 +31,20 @@ jobs:
       - name: Composer install
         run: composer install -o --no-progress --ignore-platform-reqs
       - name: Set up PHP
-        uses: shivammathur/setup-php@v1
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql
           coverage: none
-      - name: PHPUnit
+          # ini-values: 
+      - name: PHP Test
         run: |
           export TEST_MYSQL_SERVER=127.0.0.1
-          export TEST_MYSQL_PORT=${{ job.services.mysql.ports['3306'] }}
-          export TEST_MARIADB_SERVER=127.0.0.1
-          export TEST_MARIADB_PORT=${{ job.services.mariadb.ports['3306'] }}
-          ./vendor/bin/phpunit
+          php -r "var_dump($_ENV);"
+      # - name: PHPUnit
+      #   run: |
+      #     export TEST_MYSQL_SERVER=127.0.0.1
+      #     export TEST_MYSQL_PORT=${{ job.services.mysql.ports['3306'] }}
+      #     export TEST_MARIADB_SERVER=127.0.0.1
+      #     export TEST_MARIADB_PORT=${{ job.services.mariadb.ports['3306'] }}
+      #     ./vendor/bin/phpunit

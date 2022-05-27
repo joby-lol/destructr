@@ -15,6 +15,21 @@ abstract class AbstractSQLDriverSchemaChangeTest extends TestCase
     use TestCaseTrait;
     const TEST_TABLE = 'schematest';
 
+    protected static function DRIVER_USERNAME()
+    {
+        return null;
+    }
+
+    protected static function DRIVER_PASSWORD()
+    {
+        return null;
+    }
+
+    protected static function DRIVER_OPTIONS()
+    {
+        return null;
+    }
+
     public function testSchemaChanges()
     {
         // set up using schema A

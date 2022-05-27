@@ -12,6 +12,21 @@ abstract class AbstractSQLDriverIntegrationTest extends TestCase
     use TestCaseTrait;
     const TEST_TABLE = 'integrationtest';
 
+    protected static function DRIVER_USERNAME()
+    {
+        return null;
+    }
+
+    protected static function DRIVER_PASSWORD()
+    {
+        return null;
+    }
+
+    protected static function DRIVER_OPTIONS()
+    {
+        return null;
+    }
+
     public static function setUpBeforeClass()
     {
         $pdo = static::createPDO();

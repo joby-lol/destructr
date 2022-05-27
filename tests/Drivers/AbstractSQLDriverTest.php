@@ -21,6 +21,9 @@ abstract class AbstractSQLDriverTest extends TestCase
 {
     use TestCaseTrait;
 
+    const DRIVER_USERNAME = 'root';
+    const DRIVER_PASSWORD = 'root';
+
     /*
     In actual practice, these would come from a Factory
      */
@@ -139,9 +142,9 @@ abstract class AbstractSQLDriverTest extends TestCase
     {
         $class = static::DRIVER_CLASS;
         return new $class(
-            static::DRIVER_DSN,
-            static::DRIVER_USERNAME,
-            static::DRIVER_PASSWORD,
+            static::DRIVER_DSN(),
+            'root',
+            'root',
             static::DRIVER_OPTIONS
         );
     }
@@ -158,7 +161,7 @@ abstract class AbstractSQLDriverTest extends TestCase
     protected static function createPDO()
     {
         return new \PDO(
-            static::DRIVER_DSN,
+            static::DRIVER_DSN(),
             static::DRIVER_USERNAME,
             static::DRIVER_PASSWORD,
             static::DRIVER_OPTIONS

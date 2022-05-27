@@ -103,20 +103,20 @@ abstract class AbstractSQLDriverSchemaChangeTest extends TestCase
     {
         $class = static::DRIVER_CLASS;
         return new $class(
-            static::DRIVER_DSN,
-            static::DRIVER_USERNAME,
-            static::DRIVER_PASSWORD,
-            static::DRIVER_OPTIONS
+            static::DRIVER_DSN(),
+            static::DRIVER_USERNAME(),
+            static::DRIVER_PASSWORD(),
+            static::DRIVER_OPTIONS()
         );
     }
 
     protected static function createPDO()
     {
         return new \PDO(
-            static::DRIVER_DSN,
-            static::DRIVER_USERNAME,
-            static::DRIVER_PASSWORD,
-            static::DRIVER_OPTIONS
+            static::DRIVER_DSN(),
+            static::DRIVER_USERNAME(),
+            static::DRIVER_PASSWORD(),
+            static::DRIVER_OPTIONS()
         );
     }
 

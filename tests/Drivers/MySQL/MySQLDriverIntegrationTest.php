@@ -11,14 +11,29 @@ use Destructr\Drivers\MySQLDriver;
 class MySQLDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
 {
     const DRIVER_CLASS = MySQLDriver::class;
-    const DRIVER_OPTIONS = null;
 
     protected static function DRIVER_DSN()
     {
         return sprintf(
-            'mysql:host=%s:%s;dbname=destructr_test',
+            'mysql:host=%s:%s;dbname=%s',
             $_ENV['TEST_MYSQL_SERVER'],
-            $_ENV['TEST_MYSQL_PORT']
+            $_ENV['TEST_MYSQL_PORT'],
+            static::DRIVER_DBNAME()
         );
+    }
+
+    protected static function DRIVER_DBNAME()
+    {
+        return @$_ENV['TEST_MYSQL_DBNAME'] ?? 'destructr_test';
+    }
+
+    protected static function DRIVER_USERNAME()
+    {
+        return @$_ENV['TEST_MYSQL_USER'] ?? 'root';
+    }
+
+    protected static function DRIVER_PASSWORD()
+    {
+        return @$_ENV['TEST_MYSQL_PASSWORD'] ?? 'root';
     }
 }

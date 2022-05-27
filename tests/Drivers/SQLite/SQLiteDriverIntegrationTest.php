@@ -11,7 +11,6 @@ use Destructr\Drivers\SQLiteDriver;
 class SQLiteDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
 {
     const DRIVER_CLASS = SQLiteDriver::class;
-    const DRIVER_OPTIONS = null;
 
     public static function setUpBeforeClass()
     {
@@ -21,5 +20,15 @@ class SQLiteDriverIntegrationTest extends AbstractSQLDriverIntegrationTest
     public static function DRIVER_DSN()
     {
         return 'sqlite:' . __DIR__ . '/integration.test.sqlite';
+    }
+
+    protected static function DRIVER_DBNAME()
+    {
+        return null;
+    }
+
+    protected static function DRIVER_USERNAME()
+    {
+        return null;
     }
 }

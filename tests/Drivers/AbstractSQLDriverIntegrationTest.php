@@ -138,10 +138,10 @@ abstract class AbstractSQLDriverIntegrationTest extends TestCase
     {
         $class = static::DRIVER_CLASS;
         return new $class(
-            static::DRIVER_DSN,
-            static::DRIVER_USERNAME,
-            static::DRIVER_PASSWORD,
-            static::DRIVER_OPTIONS
+            static::DRIVER_DSN(),
+            static::DRIVER_USERNAME(),
+            static::DRIVER_PASSWORD(),
+            static::DRIVER_OPTIONS()
         );
     }
 
@@ -157,10 +157,10 @@ abstract class AbstractSQLDriverIntegrationTest extends TestCase
     protected static function createPDO()
     {
         return new \PDO(
-            static::DRIVER_DSN,
-            static::DRIVER_USERNAME,
-            static::DRIVER_PASSWORD,
-            static::DRIVER_OPTIONS
+            static::DRIVER_DSN(),
+            static::DRIVER_USERNAME(),
+            static::DRIVER_PASSWORD(),
+            static::DRIVER_OPTIONS()
         );
     }
 

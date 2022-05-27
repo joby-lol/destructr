@@ -9,22 +9,22 @@ jobs:
     strategy:
       matrix:
         php: ["7.0", "7.1", "7.2", "7.3", "7.4"]
-    # services:
-    #   mysql:
-    #     image: mysql:5.7
-    #     env:
-    #       MYSQL_ROOT_PASSWORD: root
-    #       MYSQL_DATABASE: destructr_test
-    #     ports:
-    #       - 3306
-    #     options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    #   mariadb:
-    #     image: mariadb:10.2
-    #     env:
-    #       MARIADB_ROOT_PASSWORD: root
-    #       MARIADB_DATABASE: destructr_test
-    #     ports:
-    #       - 3306
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: destructr_test
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      mariadb:
+        image: mariadb:10.2
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: destructr_test
+        ports:
+          - 3306
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -36,18 +36,11 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql
           coverage: none
-          # ini-values: 
-      - name: PHP Test
+          ini-values: variables_order=EGPCS
+      - name: PHPUnit
         env:
-          TEST_VARIABLE: foobar
-        run: |
-          export TEST_MYSQL_SERVER=127.0.0.1
-          php -r "var_dump(ini_get('variables_order'));"
-          php -r "var_dump($_ENV);"
-      # - name: PHPUnit
-      #   run: |
-      #     export TEST_MYSQL_SERVER=127.0.0.1
-      #     export TEST_MYSQL_PORT=${{ job.services.mysql.ports['3306'] }}
-      #     export TEST_MARIADB_SERVER=127.0.0.1
-      #     export TEST_MARIADB_PORT=${{ job.services.mariadb.ports['3306'] }}
-      #     ./vendor/bin/phpunit
+          TEST_MYSQL_SERVER: 127.0.0.1
+          TEST_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          TEST_MARIADB_SERVER: 127.0.0.1
+          TEST_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
+        run: ./vendor/bin/phpunit

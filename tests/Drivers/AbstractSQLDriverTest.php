@@ -1,6 +1,8 @@
 <?php
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
-declare (strict_types = 1);
+
+declare(strict_types=1);
+
 namespace Destructr\Drivers;
 
 use Destructr\DSO;
@@ -162,8 +164,8 @@ abstract class AbstractSQLDriverTest extends TestCase
     {
         return new \PDO(
             static::DRIVER_DSN(),
-            static::DRIVER_USERNAME,
-            static::DRIVER_PASSWORD,
+            'root',
+            'root',
             static::DRIVER_OPTIONS
         );
     }

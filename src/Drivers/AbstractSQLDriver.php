@@ -1,5 +1,6 @@
 <?php
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
+
 namespace Destructr\Drivers;
 
 use Destructr\DSOInterface;
@@ -35,10 +36,14 @@ abstract class AbstractSQLDriver extends AbstractDriver
 
     public function tableExists(string $table): bool
     {
-        $stmt = $this->pdo()->prepare($this->sql_table_exists($table));
-        if ($stmt && $stmt->execute() !== false) {
-            return true;
-        } else {
+        try {
+            $stmt = $this->pdo()->prepare($this->sql_table_exists($table));
+            if ($stmt && $stmt->execute() !== false) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $th) {
             return false;
         }
     }
@@ -359,5 +364,4 @@ EOT;
     {
         return 'DELETE FROM `' . $args['table'] . '` WHERE `dso_id` = :dso_id;';
     }
-
 }

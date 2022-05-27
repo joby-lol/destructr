@@ -1,0 +1,33 @@
+name: Test
+
+on: push
+
+jobs:
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.0','7.1','7.2','7.3','7.4']
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: destructr_test
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Composer install
+        run: composer install -o --no-progress
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql
+          coverage: none
+      - name: PHPUnit
+        run: composer run test

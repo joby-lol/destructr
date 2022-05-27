@@ -37,9 +37,4 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql
           coverage: none
       - name: PHPUnit
-        env:
-          TEST_MYSQL_SERVER: 127.0.0.1
-          TEST_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-          TEST_MARIADB_SERVER: 127.0.0.1
-          TEST_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
-        run: composer run test
+        run: TEST_MYSQL_SERVER=127.0.0.1 TEST_MYSQL_PORT=${{ job.services.mysql.ports['3306'] }} TEST_MARIADB_SERVER=127.0.0.1 TEST_MARIADB_PORT=${{ job.services.mariadb.ports['3306'] }} composer run test

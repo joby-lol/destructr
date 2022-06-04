@@ -1,5 +1,6 @@
 <?php
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
+
 namespace Destructr\Drivers;
 
 use Destructr\DSOInterface;
@@ -11,7 +12,7 @@ use Destructr\DSOInterface;
  * Note that unlike databases with native JSON functions, this driver's generated
  * columns are NOT generated in the database. They are updated by this class whenever
  * the data they reference changes. This doesn't matter much if you're doing all
- * your updating through Destructr, but is something to be cognizent of if your
+ * your updating through Destructr, but is something to be cognizant of if your
  * data is being updated outside Destructr.
  */
 class SQLiteDriver extends AbstractSQLDriver
@@ -212,14 +213,17 @@ class SQLiteDriver extends AbstractSQLDriver
     {
         $result = true;
         foreach ($schema as $key => $vcol) {
-            if (@$vcol['primary']) {
-                //sqlite automatically creates this index
-            } elseif (@$vcol['unique']) {
-                $result = $result &&
-                $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
-            } elseif (@$vcol['index']) {
-                $idxResult = $result &&
-                $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+            try {
+                if (@$vcol['primary']) {
+                    //sqlite automatically creates this index
+                } elseif (@$vcol['unique']) {
+                    $result = $result &&
+                        $this->pdo->exec('CREATE UNIQUE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+                } elseif (@$vcol['index']) {
+                    $idxResult = $result &&
+                        $this->pdo->exec('CREATE INDEX ' . $table . '_' . $vcol['name'] . '_idx on `' . $table . '`(`' . $vcol['name'] . '`)') !== false;
+                }
+            } catch (\Throwable $th) {
             }
         }
         return $result;

@@ -4,7 +4,6 @@
 namespace Destructr;
 
 use Destructr\Drivers\AbstractDriver;
-use mofodojodino\ProfanityFilter\Check;
 
 /**
  * The Factory is responsible for keeping track of which columns may or may not
@@ -23,8 +22,8 @@ use mofodojodino\ProfanityFilter\Check;
  */
 class Factory
 {
-    const ID_CHARS = 'abcdefghijkmnorstuvwxyz0123456789';
-    const ID_LENGTH = 16;
+    const ID_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const ID_LENGTH = 8;
 
     /**
      * @var Drivers\AbstractDriver
@@ -304,19 +303,17 @@ class Factory
         return $search;
     }
 
-    protected static function generate_id($chars, $length): string
+    protected static function generate_id($chars, $length, string $prefix = null): string
     {
-        $check = new Check();
-        do {
-            $id = '';
-            while (strlen($id) < $length) {
-                $id .= substr(
-                    $chars,
-                    rand(0, strlen($chars) - 1),
-                    1
-                );
-            }
-        } while ($check->hasProfanity($id));
+        $id = '';
+        while (strlen($id) < $length) {
+            $id .= substr(
+                $chars,
+                rand(0, strlen($chars) - 1),
+                1
+            );
+        }
+        if ($prefix) $id = $prefix . '_' . $id;
         return $id;
     }
 

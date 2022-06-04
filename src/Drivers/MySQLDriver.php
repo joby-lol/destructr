@@ -1,5 +1,6 @@
 <?php
 /* Destructr | https://github.com/jobyone/destructr | MIT License */
+
 namespace Destructr\Drivers;
 
 /**
@@ -31,18 +32,21 @@ class MySQLDriver extends AbstractSQLDriver
     protected function buildIndexes(string $table, array $schema): bool
     {
         foreach ($schema as $path => $col) {
-            if (@$col['primary']) {
-                $this->pdo->exec(
-                    "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING BTREE"
-                );
-            } elseif (@$col['unique'] && $as = @$col['index']) {
-                $this->pdo->exec(
-                    "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
-                );
-            } elseif ($as = @$col['index']) {
-                $this->pdo->exec(
-                    "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
-                );
+            try {
+                if (@$col['primary']) {
+                    $this->pdo->exec(
+                        "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING BTREE"
+                    );
+                } elseif (@$col['unique'] && $as = @$col['index']) {
+                    $this->pdo->exec(
+                        "CREATE UNIQUE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
+                    );
+                } elseif ($as = @$col['index']) {
+                    $this->pdo->exec(
+                        "CREATE INDEX `{$table}_{$col['name']}_idx` ON {$table} (`{$col['name']}`) USING $as"
+                    );
+                }
+            } catch (\Throwable $th) {
             }
         }
         return true;
@@ -74,7 +78,7 @@ class MySQLDriver extends AbstractSQLDriver
                 $line .= ' VIRTUAL;';
             }
             $out = $out &&
-            $this->pdo->exec($line) !== false;
+                $this->pdo->exec($line) !== false;
         }
         return $out;
     }
@@ -84,7 +88,7 @@ class MySQLDriver extends AbstractSQLDriver
         $out = true;
         foreach ($schema as $path => $col) {
             $out = $out &&
-            $this->pdo->exec("ALTER TABLE `{$table}` DROP COLUMN `${col['name']}`;") !== false;
+                $this->pdo->exec("ALTER TABLE `{$table}` DROP COLUMN `${col['name']}`;") !== false;
         }
         return $out;
     }

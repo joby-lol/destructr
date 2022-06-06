@@ -50,7 +50,10 @@ abstract class AbstractSQLDriver extends AbstractDriver
 
     public function createSchemaTable()
     {
-        $this->pdo->exec($this->sql_create_schema_table());
+        try {
+            $this->pdo->exec($this->sql_create_schema_table());
+        } catch (\Throwable $th) {
+        }
         return $this->tableExists(AbstractDriver::SCHEMA_TABLE);
     }
 

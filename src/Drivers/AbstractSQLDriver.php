@@ -12,9 +12,7 @@ abstract class AbstractSQLDriver extends AbstractDriver
     public $lastPreparationErrorOn;
     public $pdo;
     protected $schemas = [];
-    protected $transactions = 0;
-
-    const NESTED_TRANSACTION_SUPPORT = false;
+    protected $transactionsEnabled = true;
 
     abstract protected function sql_ddl(array $args = []): string;
     abstract protected function expandPath(string $path): string;
@@ -69,34 +67,32 @@ abstract class AbstractSQLDriver extends AbstractDriver
         return $this->pdo;
     }
 
+    public function disableTransactions()
+    {
+        $this->transactionsEnabled = false;
+    }
+
+    public function enableTransactions()
+    {
+        $this->transactionsEnabled = true;
+    }
+
     public function beginTransaction(): bool
     {
-        $this->transactions++;
-        if (static::NESTED_TRANSACTION_SUPPORT || !$this->pdo->inTransaction()) {
-            return $this->pdo->beginTransaction();
-        } else {
-            return true;
-        }
+        if (!$this->transactionsEnabled) return true;
+        return $this->pdo->beginTransaction();
     }
 
     public function commit(): bool
     {
-        $this->transactions--;
-        if (static::NESTED_TRANSACTION_SUPPORT || ($this->transactions == 0 && $this->pdo->inTransaction())) {
-            return $this->pdo->commit();
-        } else {
-            return true;
-        }
+        if (!$this->transactionsEnabled) return true;
+        return $this->pdo->commit();
     }
 
     public function rollBack(): bool
     {
-        $this->transactions--;
-        if (static::NESTED_TRANSACTION_SUPPORT || ($this->transactions == 0 && $this->pdo->inTransaction())) {
-            return $this->pdo->rollBack();
-        } else {
-            return true;
-        }
+        if (!$this->transactionsEnabled) return true;
+        return $this->pdo->rollBack();
     }
 
     protected function expandPaths($value)

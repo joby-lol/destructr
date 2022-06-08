@@ -12,6 +12,9 @@ abstract class AbstractSQLDriver extends AbstractDriver
     public $lastPreparationErrorOn;
     public $pdo;
     protected $schemas = [];
+    protected $transactions = 0;
+
+    const NESTED_TRANSACTION_SUPPORT = false;
 
     abstract protected function sql_ddl(array $args = []): string;
     abstract protected function expandPath(string $path): string;
@@ -68,17 +71,32 @@ abstract class AbstractSQLDriver extends AbstractDriver
 
     public function beginTransaction(): bool
     {
-        return $this->pdo->beginTransaction();
+        $this->transactions++;
+        if (static::NESTED_TRANSACTION_SUPPORT || !$this->pdo->inTransaction()) {
+            return $this->pdo->beginTransaction();
+        } else {
+            return true;
+        }
     }
 
     public function commit(): bool
     {
-        return $this->pdo->commit();
+        $this->transactions--;
+        if (static::NESTED_TRANSACTION_SUPPORT || ($this->transactions == 0 && $this->pdo->inTransaction())) {
+            return $this->pdo->commit();
+        } else {
+            return true;
+        }
     }
 
     public function rollBack(): bool
     {
-        return $this->pdo->rollBack();
+        $this->transactions--;
+        if (static::NESTED_TRANSACTION_SUPPORT || ($this->transactions == 0 && $this->pdo->inTransaction())) {
+            return $this->pdo->rollBack();
+        } else {
+            return true;
+        }
     }
 
     protected function expandPaths($value)
